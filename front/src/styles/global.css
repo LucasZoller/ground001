@@ -1,0 +1,507 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+:root {
+  --slate-50: rgb(248 250 252);
+  --slate-100: rgb(241 245 249);
+  --slate-200: rgb(226 232 240);
+  --slate-300: rgb(203 213 225);
+  --slate-400: rgb(148 163 184);
+  --slate-500: rgb(100 116 139);
+  --slate-600: rgb(71 85 105);
+  --slate-700: rgb(51 65 85);
+  --slate-800: rgb(30 41 59);
+  --slate-900: rgb(15 23 42);
+  --slate-1000: rgb(2 6 23);
+
+  --gray-50: #d4d4d4;
+  --gray-100: #bebebe;
+  --gray-200: #a9a9a9;
+  --gray-300: #949494;
+  --gray-400: #7e7e7e;
+  --gray-500: #696969;
+  --gray-600: #535353;
+  --gray-700: #3e3e3e;
+  --gray-800: #292929;
+  --gray-900: #1c1c1c;
+  --gray-1000: #101010;
+
+  --txt-gray: #999;
+
+  --pink: #fa8ccf;
+
+  --deep-pink: rgb(254 0 136);
+
+  --blue: #43b0f7;
+
+  --purple: #625bf8;
+
+  --green: #449544;
+
+  --turquoise: #118a7e;
+  --turquoise-deep: #166678;
+
+  --melon: #97cba9;
+
+  --grape: #815e94;
+  --grape-deep: #8b104e;
+
+  --orange: #ff9a3c;
+  --orange-deep: #ff6f3c;
+
+  --autumn: #974949;
+  --autumn-deep: #9d2503;
+
+  --dolphin: #2772db;
+  --dolphin-deep: #1e549f;
+
+  --strawberry: #ff5d9e;
+  --strawberry-deep: #f23557;
+
+  --magenta: #f500cf;
+  --magenta-deep: #c400a5;
+}
+
+body {
+  /* overflow: hidden; */
+  font-family: meiryo;
+  color: #fff;
+
+  margin: 0;
+  background-color: var(--gray-800);
+}
+
+main {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+
+main .overlay {
+  grid-template-rows: 1fr;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style-type: none;
+}
+
+img {
+  display: block;
+  width: 100%;
+}
+
+input {
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  outline: none;
+}
+
+/* Hide the spinner for input type="number" */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: blueviolet;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  margin: 1rem;
+}
+
+.header {
+  width: 100%;
+  text-align: center;
+  background-color: var(--slate-900);
+  color: white;
+}
+
+.logo {
+  color: var(--purple);
+  font-size: 2rem;
+  font-family: "Nothing You Could Do", cursive;
+}
+
+.footer {
+  display: grid;
+  text-align: center;
+  height: 33px;
+  background-color: var(--slate-950);
+  color: aliceblue;
+}
+
+.section {
+  margin: 0.8rem;
+  padding: 0.5rem;
+  border: 1px solid #aaa;
+}
+
+.section-full {
+  width: 100%;
+
+  max-height: 100vh;
+  background-color: var(--slate-800);
+  color: antiquewhite;
+  padding: 1rem;
+}
+
+.section-two-parts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+  padding-bottom: 100px;
+}
+
+.section-left {
+  width: 100%;
+  overflow-y: scroll;
+  max-height: 100vh;
+  background-color: var(--slate-800);
+  color: antiquewhite;
+  padding: 1rem;
+}
+
+.section-right {
+  width: 100%;
+  overflow-y: scroll;
+  max-height: 100vh;
+  background-color: var(--slate-700);
+  color: cadetblue;
+  padding: 1rem;
+}
+
+.label-and-input {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+}
+
+.boolean-button {
+  display: flex;
+  width: 200px;
+  border-radius: 15px;
+  border: 2px solid white;
+  box-sizing: border-box;
+  color: white;
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.boolean-button-on {
+  flex: 1;
+  padding: 0.5rem;
+  background-color: var(--pink);
+  transition: background-color 0.1s;
+}
+
+.boolean-button-off {
+  flex: 1;
+  padding: 0.5rem;
+  background-color: var(--slate-500);
+  transition: background-color 0.1s;
+}
+
+.on-off-switch {
+  display: flex;
+  text-align: center;
+  width: 50px;
+  height: 50px;
+  border: 2px solid white;
+  border-radius: 35px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+.on-off-switch.on {
+  background-color: var(--green);
+  transition: background-color 0.3s;
+}
+.on-off-switch.off {
+  background-color: black;
+  transition: background-color 0.3s;
+}
+
+.on-off-switch.press {
+  background-color: var(--purple);
+}
+
+.block-button {
+  font-size: 0.8rem;
+  color: var(--purple);
+  border: 1px solid var(--purple);
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.block-button:hover {
+  background-color: var(--pink);
+}
+
+.mini-button-turquoise,
+.mini-button-orange,
+.mini-button-grape,
+.mini-button-autumn,
+.mini-button-dolphin,
+.mini-button-strawberry,
+.mini-button-magenta,
+.mini-button-gray,
+.mini-button-outlined,
+.mini-button-bone {
+  display: block;
+  cursor: pointer;
+  color: antiquewhite;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-align: center;
+  align-self: flex-start;
+
+  transition: background-color 190ms ease;
+}
+
+.mini-button-turquoise {
+  background-color: var(--turquoise);
+}
+.mini-button-turquoise:hover {
+  background-color: var(--turquoise-deep);
+}
+
+.mini-button-orange {
+  background-color: var(--orange);
+}
+.mini-button-orange:hover {
+  background-color: var(--orange-deep);
+}
+
+.mini-button-grape {
+  background-color: var(--grape);
+}
+.mini-button-grape:hover {
+  background-color: var(--grape-deep);
+}
+
+.mini-button-autumn {
+  background-color: var(--autumn);
+}
+.mini-button-autumn:hover {
+  background-color: var(--autumn-deep);
+}
+
+.mini-button-dolphin {
+  background-color: var(--dolphin);
+}
+.mini-button-dolphin:hover {
+  background-color: var(--dolphin-deep);
+}
+
+.mini-button-strawberry {
+  background-color: var(--strawberry);
+}
+.mini-button-strawberry:hover {
+  background-color: var(--strawberry-deep);
+}
+
+.mini-button-magenta {
+  background-color: var(--magenta);
+}
+.mini-button-magenta:hover {
+  background-color: var(--magenta-deep);
+}
+
+.mini-button-gray {
+  background-color: var(--gray-600);
+}
+.mini-button-gray:hover {
+  background-color: var(--gray-700);
+}
+
+.mini-button-outlined,
+.mini-button-bone {
+  border: 1px solid var(--gray-100);
+}
+.mini-button-outlined:hover {
+  background-color: var(--gray-900);
+}
+
+.mini-window-gray900 {
+  background-color: var(--gray-900);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.mini-window-element-gray900 {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mini-window-element-gray900:hover {
+  background-color: var(--gray-1000);
+}
+
+.box-cadetblue,
+.box-turquoise {
+  margin: 0.3rem 0.4rem;
+  padding: 0.2rem 0.3rem;
+  display: inline-block;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.box-cadetblue {
+  border: 1px solid cadetblue;
+  color: cadetblue;
+}
+
+.box-turquoise {
+  border: 1px solid var(--turquoise);
+  color: var(--turquoise);
+}
+
+.box-cadetblue:hover,
+.box-turquoise:hover {
+  background-color: black;
+}
+
+.subcat-selector {
+  padding: 0.1rem 0.5rem;
+  margin-left: 1rem;
+  background-color: var(--purple);
+  color: white;
+  cursor: pointer;
+}
+.subcat-selector:hover {
+  background-color: black;
+}
+
+.selected {
+  background-color: var(--deep-pink);
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+}
+
+.fill-gray-50 {
+  fill: var(--gray-50);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Gray with 50% transparency */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* Ensures the overlay is above other content */
+  backdrop-filter: blur(4px);
+}
+
+.modal-auth,
+.modal-message {
+  display: grid;
+  background-color: var(--gray-800);
+  border-radius: 5px;
+}
+
+.modal-auth {
+  width: 440px;
+}
+.modal-message {
+  width: 550px;
+}
+
+.transparent-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Make sure it covers everything else */
+  backdrop-filter: blur(4px);
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Make sure it covers everything else */
+}
+.overlay-dark {
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+.rps-mobile-menu {
+  background-color: var(--gray-900);
+  position: absolute;
+  height: 100vh;
+  z-index: 100;
+}
+
+.account-menu {
+  visibility: hidden;
+  position: absolute;
+  top: 65%;
+  right: 0;
+  z-index: 10; /* Keep it above the overlay */
+  padding: 10px 20px;
+  background-color: var(--gray-900);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.dynamic-overlay {
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0); /* Initially transparent */
+  backdrop-filter: blur(0px); /* No blur initially */
+  transition:
+    background-color 0.4s ease,
+    backdrop-filter 0.4s ease;
+  z-index: 1; /* Keep it under the hover element */
+  pointer-events: none; /* Ensure it doesn't interfere with clicks */
+}
+
+.hover-target:hover > .account-menu {
+  visibility: visible;
+}
+.hover-target:hover > .dynamic-overlay {
+  visibility: visible;
+  background-color: rgba(0, 0, 0, 0.5); /* Dim the background */
+  backdrop-filter: blur(4px); /* Apply blur effect */
+}
+
+.float-center {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}

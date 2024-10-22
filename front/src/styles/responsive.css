@@ -1,0 +1,32 @@
+/* header */
+.rps-header {
+  width: 100%;
+  padding: 5px;
+}
+
+.rps-header-lang-box {
+  display: none;
+}
+
+.rps-header-search-box {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .rps-header {
+    padding: 10px;
+  }
+  .rps-header-lang-box {
+    display: block;
+  }
+  .rps-header-search-box {
+    display: block;
+  }
+  .rsp-main-width {
+    width: 800px;
+  }
+
+  .rps-mobile-menu-button {
+    display: none;
+  }
+}
