@@ -1,32 +1,31 @@
 import { component$ } from "@builder.io/qwik"
-import ImgAknm024Thumb260px from "../../../../public/images/aknm024-thumb-260px.jpg?jsx"
+import { RequestEvent } from "@builder.io/qwik-city"
+
+import { useAuth } from "../../../hooks/useAuth"
+
+import { obj } from "./postgresData"
+import { IndexWish } from "../../../components/AccountPages/IndexWish"
 import { Breadcrumbs } from "../../../components/UtilityComponents/Breadcrums"
+
+export const onGet = async ({ cookie, redirect }: RequestEvent) => {
+  // redirect to login page if not logged in
+  const isAuthrized = cookie.get("site-session")
+
+  if (!isAuthrized?.value) {
+    throw redirect(302, "/portal/signin")
+  }
+}
+
 export default component$(() => {
+  const { userState, sessionState } = useAuth("/user-area-test")
   return (
-    <>
+    <section>
       <Breadcrumbs />
-      <div>
-        <h2>Your Items can be viewed here!</h2>
-        <div>
-          <div>
-            <div class="inline-block w200px">
-              <ImgAknm024Thumb260px class="w100 ha" />
-            </div>
-            <div>
-              <div>Product number</div>
-              <div>Title of the product</div>
-            </div>
-            <div>
-              <span>Play Here</span>
-              <span>Download</span>
-            </div>
-            <div>
-              <span>Expiry Date : </span>
-              <span>2025.02.25</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+      {userState.user_code ? (
+        <IndexWish wishItemObjArr={obj} />
+      ) : (
+        <div>Nothing to show here</div>
+      )}
+    </section>
   )
 })

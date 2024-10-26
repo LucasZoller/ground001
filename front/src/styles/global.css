@@ -8,6 +8,7 @@
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  -webkit-box-sizing: border-box;
 }
 
 :root {
@@ -71,6 +72,49 @@
   --magenta-deep: #c400a5;
 }
 
+.bg-turquoise {
+  background-color: var(--turquoise);
+}
+.bg-turquoise:hover {
+  background-color: var(--turquoise-deep);
+}
+.bg-grape {
+  background-color: var(--grape);
+}
+.bg-grape:hover {
+  background-color: var(--grape-deep);
+}
+.bg-orange {
+  background-color: var(--orange);
+}
+.bg-orange:hover {
+  background-color: var(--orange-deep);
+}
+.bg-autumn {
+  background-color: var(--autumn);
+}
+.bg-autumn:hover {
+  background-color: var(--autumn-deep);
+}
+.bg-dolphin {
+  background-color: var(--dolphin);
+}
+.bg-dolphin:hover {
+  background-color: var(--dolphin-deep);
+}
+.bg-strawberry {
+  background-color: var(--strawberry);
+}
+.bg-strawberry:hover {
+  background-color: var(--strawberry-deep);
+}
+.bg-magenta {
+  background-color: var(--magenta);
+}
+.bg-magenta:hover {
+  background-color: var(--magenta-deep);
+}
+
 body {
   /* overflow: hidden; */
   font-family: meiryo;
@@ -102,6 +146,10 @@ ul {
 img {
   display: block;
   width: 100%;
+}
+svg {
+  display: block;
+  margin: -2px;
 }
 
 input {
@@ -271,13 +319,25 @@ button {
   display: block;
   cursor: pointer;
   color: antiquewhite;
-  font-size: 0.8rem;
-  padding: 5px 10px;
   border-radius: 4px;
   text-align: center;
-  align-self: flex-start;
-
   transition: background-color 190ms ease;
+  font-size: 0.8rem;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.mini-button-turquoise > *,
+.mini-button-orange > *,
+.mini-button-grape > *,
+.mini-button-autumn > *,
+.mini-button-dolphin > *,
+.mini-button-strawberry > *,
+.mini-button-magenta > *,
+.mini-button-gray > *,
+.mini-button-outlined > *,
+.mini-button-bone > * {
+  height: 20px !important;
 }
 
 .mini-button-turquoise {

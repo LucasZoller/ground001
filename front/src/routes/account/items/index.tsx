@@ -3,7 +3,7 @@ import { RequestEvent } from "@builder.io/qwik-city"
 
 import { useAuth } from "../../../hooks/useAuth"
 
-import { IndexItem } from "../../../components/AccountPages/IndexItem"
+import { IndexItems } from "../../../components/AccountPages/IndexItems"
 import { Breadcrumbs } from "../../../components/UtilityComponents/Breadcrums"
 
 // Replace the following "obj" with the actual fetched data from postgres!!🐘🐘🐘🐘
@@ -23,9 +23,13 @@ export default component$(() => {
   const { userState, sessionState } = useAuth("/user-area-test")
 
   return (
-    <div>
+    <section>
       <Breadcrumbs />
-      {userState.user_code ? <IndexItem cardObjArray={obj} /> : <div>nothing to show</div>}
-    </div>
+      {userState.user_code ? (
+        <IndexItems cardObjArray={obj} />
+      ) : (
+        <div>nothing to show</div>
+      )}
+    </section>
   )
 })
