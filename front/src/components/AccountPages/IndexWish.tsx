@@ -12,73 +12,70 @@ type WishItem = {
     jpeg: string[]
   }
 }
-type WishItemObjArr = { wishItemObjArr: WishItem[] }
-export const IndexWish = component$(({ wishItemObjArr }: WishItemObjArr) => {
+type WishIndexObj = {
+  wishItemObjArr: WishItem[]
+  isLastSlice: boolean
+}
+export const IndexWish = component$(({ wishItemObjArr, isLastSlice }: WishIndexObj) => {
+  console.log("🎐🎐🎐 let's check the is last value!", isLastSlice)
   return (
     <div class="grid">
       <div class="ma w100" style={{ maxWidth: "920px" }}>
         <h2 class="font-weight-600 font-11 ptb5">Your List</h2>
-        {wishItemObjArr.map((singleWishItem) => (
-          <div class="radius5 bg-gray-900" style={{ overflow: "hidden" }}>
-            <div class="grid wish-card gap8 p8">
+        <div class="radius5 bg-gray-900 p8" style={{ overflow: "hidden" }}>
+          {wishItemObjArr.map((singleWishItem, index) => (
+            <div class="grid wish-card responsive-padding gap8 ptb9 border-bottom-until-last" key={singleWishItem.productId}>
               <div class="flex gap8">
-                <picture class="inline-block order-card-body-thumb mtba">
-                  <source
-                    srcset={singleWishItem.thumbSetObject.avif[0]}
-                    type="image/avif"
-                  />
-                  <source
-                    srcset={singleWishItem.thumbSetObject.jpeg[0]}
-                    type="image/jpeg"
-                  />
+                <picture class="inline-block order-card-body-thumb mtba" style={{ minWidth: "150px" }}>
+                  <source media="(max-width:768px)" srcset={singleWishItem.thumbSetObject.avif[0]} type="image/avif" />
+                  <source media="(max-width:768px)" srcset={singleWishItem.thumbSetObject.jpeg[0]} type="image/jpeg" />
+                  <source media="(min-width:769px)" srcset={singleWishItem.thumbSetObject.avif[1]} type="image/avif" />
+                  <source media="(min-width:769px)" srcset={singleWishItem.thumbSetObject.jpeg[1]} type="image/jpeg" />
 
                   <img
                     width="320"
                     height="180"
                     style={{ maxWidth: "100%", height: "auto" }}
-                    src={singleWishItem.thumbSetObject.jpeg[0]}
+                    src={singleWishItem.thumbSetObject.jpeg[1]}
                     alt="small thumbnail for order page"
                   />
                 </picture>
                 <div class="">
                   <div class="font-8">{singleWishItem.productId}</div>
-                  <div class="font-10 color-magenta">
-                    {singleWishItem.productTitle}
+                  <div class="font-10 color-magenta">{singleWishItem.productTitle}</div>
+                  <div class="font-9">
+                    Price: $<span class="font-12 font-weight-500">{`${singleWishItem.productPrice}`}</span>
                   </div>
-                  <div>{`$${singleWishItem.productPrice}`}</div>
-                  <div class="font-8">{`Item added ${singleWishItem.itemAddedOn}`}</div>
+                  <div class="font-8 color-gray-500">{`Item added ${singleWishItem.itemAddedOn}`}</div>
                 </div>
               </div>
 
-              <div class="mrla w100">
+              <div class="ma w100">
                 <Link class="mini-button-orange w100">Add to Cart</Link>
 
                 <div class="flex gap5 mt5">
-                  {/* <Link class="mini-button-dolphin mtba">
-                    <div>Play Sample</div>
-                  </Link>
-                  <div class="mini-button-bone w150px">
-                    <IconDelete size={18} />
-                  </div> */}
                   <MiniButton
                     obj={{
                       url: "test-url-001",
                       bg: "dolphin",
-                      w: "80%",
-                    }}>
-                    Play Test
+                      w: "80%"
+                    }}
+                  >
+                    Play Sample
                   </MiniButton>
                   <MiniButton
                     obj={{
-                      url: "test-url-001",
-                    }}>
+                      url: "test-url-001"
+                    }}
+                  >
                     <IconDelete size={21} />
                   </MiniButton>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        {isLastSlice && <span class="end-of-list-border nowrap font-8 color-gray-600 mt10">End of your list</span>}
       </div>
     </div>
   )

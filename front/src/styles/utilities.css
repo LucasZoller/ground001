@@ -286,6 +286,12 @@
 
 /* gap */
 
+.gap1 {
+  gap: 0.1rem;
+}
+.gap2 {
+  gap: 0.2rem;
+}
 .gap3 {
   gap: 0.3rem;
 }
@@ -829,9 +835,17 @@
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
+.prl20 {
+  padding-right: 2rem;
+  padding-left: 2rem;
+}
 
 .p25 {
   padding: 2.5rem;
+}
+.prlb25 {
+  padding-right: 2.5rem;
+  padding-left: 2.5rem;
 }
 .ptb25 {
   padding-top: 2.5rem;
@@ -842,6 +856,10 @@
   padding: 3rem;
 }
 
+.prl30 {
+  padding-right: 3rem;
+  padding-left: 3rem;
+}
 .ptb30 {
   padding-top: 3rem;
   padding-bottom: 3rem;
@@ -849,6 +867,10 @@
 
 .p40 {
   padding: 4rem;
+}
+.prl40 {
+  padding-right: 4rem;
+  padding-left: 4rem;
 }
 .ptb40 {
   padding-top: 4rem;
@@ -858,12 +880,20 @@
 .p50 {
   padding: 5rem;
 }
+.prl50 {
+  padding-right: 5rem;
+  padding-left: 5rem;
+}
 .ptb50 {
   padding-top: 5rem;
   padding-bottom: 5rem;
 }
 .p60 {
   padding: 6rem;
+}
+.prl60 {
+  padding-right: 6rem;
+  padding-left: 6rem;
 }
 .ptb60 {
   padding-top: 6rem;
@@ -1021,6 +1051,28 @@
 .border-bottom-gray-700 {
   border-bottom: 1px solid var(--gray-700);
 }
+.border-bottom-until-last {
+  border-bottom: 1px solid var(--gray-600);
+}
+.border-bottom-until-last:last-child {
+  border-bottom: none;
+}
+
+.end-of-list-border {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.end-of-list-border::before,
+.end-of-list-border::after {
+  display: block;
+  content: "";
+  width: 100px;
+  border-bottom: 1px solid var(--gray-700);
+}
 
 .border1 {
   border: 1px solid var(--gray-600);
@@ -1028,6 +1080,12 @@
 
 .radius5 {
   border-radius: 5px;
+}
+.radius10 {
+  border-radius: 10px;
+}
+.radius15 {
+  border-radius: 15px;
 }
 
 /* drop shadow */

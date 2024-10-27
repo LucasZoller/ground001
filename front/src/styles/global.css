@@ -117,7 +117,8 @@
 
 body {
   /* overflow: hidden; */
-  font-family: meiryo;
+  font-family: "Inter", "San Francisco", Arial, sans-serif;
+
   color: #fff;
 
   margin: 0;
@@ -420,10 +421,17 @@ button {
   background-color: var(--gray-1000);
 }
 
+/* underline border-bottom text */
+.under-line {
+  border-bottom: 1px solid var(--gray-500);
+}
+
+/* box */
+
 .box-cadetblue,
 .box-turquoise {
   margin: 0.3rem 0.4rem;
-  padding: 0.2rem 0.3rem;
+  padding: 0.3rem 0.3rem;
   display: inline-block;
   font-size: 0.8rem;
   cursor: pointer;
@@ -442,6 +450,31 @@ button {
 .box-cadetblue:hover,
 .box-turquoise:hover {
   background-color: black;
+}
+
+.pagination-box {
+  display: inline-block;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: var(--gray-700);
+  color: var(--gray-50);
+  transition: background-color 300ms ease;
+}
+.pagination-box:hover {
+  background-color: var(--gray-1000);
+}
+.pagination-box-current {
+  display: inline-block;
+  border-radius: 5px;
+  border: 1px solid var(--gray-500);
+
+  color: var(--gray-500);
+}
+.pagination-stepper {
+  color: var(--gray-50);
+  display: inline-block;
+  border-bottom: 1px solid var(--gray-50);
+  cursor: pointer;
 }
 
 .subcat-selector {

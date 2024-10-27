@@ -1,9 +1,4 @@
-import {
-  component$,
-  useContext,
-  useTask$,
-  useVisibleTask$,
-} from "@builder.io/qwik"
+import { component$, useContext, useTask$, useVisibleTask$ } from "@builder.io/qwik"
 import { Link, RequestEvent } from "@builder.io/qwik-city"
 import { useAuth } from "../../../hooks/useAuth"
 import { ContextIdGlobalState } from "../../../context/ContextGlobalState"
@@ -37,11 +32,7 @@ export default component$(() => {
   return (
     <section>
       <Breadcrumbs />
-      {!modalState.showModal ? (
-        <IndexOrders orderObjArr={obj} />
-      ) : (
-        <div>Nothing to show here</div>
-      )}
+      {!modalState.showModal ? <IndexOrders orderObjArr={obj} /> : <div>Nothing to show here</div>}
     </section>
   )
 })

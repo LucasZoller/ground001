@@ -40,6 +40,11 @@
   grid-template-columns: 1fr;
 }
 
+.responsive-padding {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
 /* bigger screen size than the biggest iPhone */
 @media (min-width: 431px) {
   .order-card-body-thumb {
@@ -48,12 +53,10 @@
   .order-buttons-width {
     width: 200px;
   }
-  .wish-card {
-    grid-template-columns: 1fr 200px;
-  }
 }
-/* screen size of iPad Mini and bigger */
-@media (min-width: 768px) {
+
+/* screen size of bigger than iPad Mini(768px) */
+@media (min-width: 769px) {
   .order-card-header {
     grid-template-columns: 1fr 1fr 3fr;
   }
@@ -64,6 +67,11 @@
     flex-direction: column;
     align-items: flex-end;
   }
+
+  .wish-card {
+    grid-template-columns: 1fr 200px;
+  }
+
   .flex-grid {
     display: grid;
   }
@@ -82,5 +90,9 @@
   }
   .rps-mobile-menu-button {
     display: none;
+  }
+  .responsive-padding {
+    padding-right: 0.8rem;
+    padding-left: 0.8rem;
   }
 }
