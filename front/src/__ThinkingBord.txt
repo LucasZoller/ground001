@@ -1,0 +1,15 @@
+
+login required : /cart, /account
+
+What user experience do we want?
+
+/cart/index.tsx
+
+1: First visit, Page refresh => AT state is lost.
+
+Request has RT.
+site-session tells validity of RT
+If valid, we can use RT to fetch user name and cart items.
+
+
+

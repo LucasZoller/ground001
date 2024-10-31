@@ -8,8 +8,6 @@ import { SignIn } from "./HeaderParts/SignIn"
 import LanguageSelector from "./HeaderParts/LanguageSelector"
 import Search from "./HeaderParts/Search"
 import MobileMenu from "./HeaderParts/MobileMenu"
-import { useSiteSessionLoader } from "../../loaders/siteSessionLoader"
-import { useVerifySiteSession } from "../../hooks/useVerifySiteSession"
 
 export default component$(() => {
   const { modalState, sessionState, mobile } = useContext(ContextIdGlobalState)
@@ -23,7 +21,9 @@ export default component$(() => {
       <MobileMenu />
       <div class="flex justify-between rps-header">
         {/* Mobile Menu Button */}
-        <div class="rps-mobile-menu-button pointer" onClick$={handleShowMobileMenu}>
+        <div
+          class="rps-mobile-menu-button pointer"
+          onClick$={handleShowMobileMenu}>
           <IconMenu />
         </div>
 
@@ -46,18 +46,17 @@ export default component$(() => {
           <SignIn />
 
           {/* Shopping cart */}
-          <div class="flex gap5 pointer">
+          <Link href="/cart/" class="flex gap5 pointer">
             <IconCart />
             {/* <div class="ma font8">Cart : 0</div> */}
-          </div>
+          </Link>
           {/* Register button */}
           {!sessionState.isValidRtFound && (
             <div
               class="mini-button-dolphin ma"
               onClick$={() => {
                 modalState.modalCode = modalCodes.MODAL_USER_REGISTRATION
-              }}
-            >
+              }}>
               <span class="font-8">Join for FREE!</span>
             </div>
           )}

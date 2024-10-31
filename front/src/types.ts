@@ -36,8 +36,8 @@ export type ModalCode =
 
 export type SessionState = {
   atExp: string
-  needVisibleTaskToGetRt: boolean // Set in the useAuthUser. True if AT was invalid or absent.
   isValidRtFound: boolean // Set in the header. True if site-session(RTExp) was found in the cookie.
+  basicUserCheckDone: boolean // True is Basic User Check was perfomed.
 }
 
 export type Mobile = {

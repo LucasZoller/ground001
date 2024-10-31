@@ -12,13 +12,17 @@ export const useSignInUser = () => {
   const nav = useNavigate()
   const authState = useContext(ContextIdAuthState)
   const signInUser = $(async (payload: UserSignInPayload) => {
-    const data = await wretch(`${BACK_URL}/auth-user-login`).options({ credentials: "include" }).post(payload).json<DatabaseResponse>()
+    const data = await wretch(`${BACK_URL}/auth-user-login`)
+      .options({ credentials: "include" })
+      .post(payload)
+      .json<DatabaseResponse>()
 
     //if (data.dbSays) loginStateChanger(data.dbSays)
 
     if (data.at && data.atExp) {
       authState.at = data.at
       sessionState.atExp = data.atExp
+      console.log("authState at is this  : ", authState.at)
       nav("/account")
     }
     console.log("🎉🎉✨sessionState.atExp", sessionState.atExp)

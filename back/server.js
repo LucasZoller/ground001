@@ -7,11 +7,13 @@ import { customCorsPlugin } from "./plugins/customCorsPlugin.js"
 import { customErrorHandlerPlugin } from "./plugins/customErrorHandlerPlugin.js"
 import { verifyAccessTokenPlugin } from "./plugins/verifyAccessTokenPlugin.js"
 
-import { test001 } from "./route-handlers/test001.js"
 import { authUserCreate } from "./route-handlers/auth-user-create.js"
 import { authUserLogin } from "./route-handlers/auth-user-login.js"
 import { publishAtFromRtPlugin } from "./route-handlers/auth-publish-at-from-rt.js"
 import { userProtectedTest } from "./route-handlers/user-protected-test.js"
+
+import { test001 } from "./route-handlers/test001.js"
+import { authTest } from "./route-handlers/authTest.js"
 
 const startServer = async () => {
   try {
@@ -41,7 +43,12 @@ const startServer = async () => {
     // /auth-session-info – For fetching active session information, such as the current state of refresh tokens or login status.
 
     // Routes 2. protected
-    fastify.get("/user-area-test", { preHandler: fastify.verifyAccessToken }, userProtectedTest)
+    fastify.get(
+      "/user-area-test",
+      { preHandler: fastify.verifyAccessToken },
+      userProtectedTest
+    )
+    fastify.get("/auth-test", authTest)
 
     const mo = process.env.MO
     const port = process.env.PORT

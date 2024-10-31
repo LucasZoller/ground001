@@ -1,6 +1,6 @@
 import paseto from "paseto"
 export const test001 = async (request, reply) => {
-  const message = "🎈Hello, hello from my first Fastify server!🎉🎉🎉"
+  const message = "🎈🎈🎈Hello, hello from my first Fastify server!🎉🎉🎉"
   let testme
   try {
     testme = "🎊🎊🎊hello my friend!"

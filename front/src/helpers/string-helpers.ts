@@ -34,7 +34,7 @@ export const cookieValueExtractor = (cookieName: string): string => {
   const cookiesArray = document.cookie.split(";")
 
   // 2: Find the cookie in the cookies array.
-  const cookiePair = cookiesArray.find(c => c.startsWith(cookieName))
+  const cookiePair = cookiesArray.find((c) => c.startsWith(cookieName))
 
   // 3: If NOT found, throw error code.
   if (!cookiePair) throw new Error("ERR_COOKIE_NOT_FOUND")
