@@ -13,9 +13,6 @@ export type AuthState = {
 }
 
 // GlobalState
-export type SignInIconState = {
-  greeting: string
-}
 
 export type LanguageState = {
   selectedLanguage: string
@@ -35,9 +32,12 @@ export type ModalCode =
   | "MODAL_CLOSE"
 
 export type SessionState = {
+  userName: string //Greeting message on the login icon.
+  cart: string[] //store cart items in string
+  lang: string //EN or JP
+  needVisibleTask: boolean // True to move on to the useVisibleTask from useTask.
+  at: string // Access Token
   atExp: string
-  isValidRtFound: boolean // Set in the header. True if site-session(RTExp) was found in the cookie.
-  basicUserCheckDone: boolean // True is Basic User Check was perfomed.
 }
 
 export type Mobile = {
@@ -45,11 +45,19 @@ export type Mobile = {
 }
 
 export type GlobalState = {
-  signInIconState: SignInIconState
   languageState: LanguageState
   modalState: ModalState
   sessionState: SessionState
   mobile: Mobile
+}
+
+//Backend returns this payload upon successful login
+export type SuccessfulSigninPayload = {
+  at: string
+  atExp: string //timsestamp in milliseconds
+  userName: string
+  cartItems: string[]
+  lang: string
 }
 
 //UserState
@@ -119,13 +127,6 @@ export type Video = {
 export type Duration = {
   minutes: string
   seconds: string
-}
-
-export type DatabaseResponse = {
-  dbSays: string
-  at?: string
-  atExp?: string
-  rt?: string
 }
 
 export type TokenManagement = {

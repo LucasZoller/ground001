@@ -31,7 +31,7 @@ export const ModalUserSignIn = component$(() => {
       inputStore.passwordHelper = false
     }
   })
-  const userSignIn = useSignInUser()
+  const signInUser = useSignInUser()
 
   return (
     <>
@@ -125,7 +125,7 @@ export const ModalUserSignIn = component$(() => {
                 inputStore.emailHelper = true
                 inputStore.passwordHelper = true
               } else {
-                const db = await userSignIn({ email: inputStore.emailValue, password: inputStore.passwordValue })
+                const db = await signInUser({ email: inputStore.emailValue, password: inputStore.passwordValue })
               }
             } catch (err: any) {
               console.log("Can we have an err code? :", err)

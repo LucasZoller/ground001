@@ -36,11 +36,9 @@ export const customErrorHandlerPlugin = fp(async fastify => {
       case "ERR_INVALID_AT":
         reply.status(400).send({ code: "ERR_INVALID_AT", message: "" })
         break
-      case "ERR_NO_COOKIES":
-        reply.status(400).send({ code: "ERR_NO_COOKIES", message: "" })
-        break
+
       case "ERR_NO_RT_IN_COOKIES":
-        reply.status(400).send({ code: "ERR_NO_RT_IN_COOKIES", message: "" })
+        reply.status(400).send({ code: "ERR_NO_RT", message: "" })
         break
       case "ERR_RT_EXPIRED":
         console.log("🎊🎉🎊Successfully seen the expired RT!!!")

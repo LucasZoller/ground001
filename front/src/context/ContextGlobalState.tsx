@@ -1,40 +1,32 @@
-import {
-  component$,
-  createContextId,
-  useContextProvider,
-  useStore,
-  Slot,
-} from "@builder.io/qwik"
+import { component$, createContextId, useContextProvider, useStore, Slot } from "@builder.io/qwik"
 import { GlobalState } from "../types"
 
 // The constant holding `createContextId()` is the identifier to pass to `useContext()`.
 // This constant bundles both the string identifier and the associated type.
 
-export const ContextIdGlobalState = createContextId<GlobalState>(
-  "context-id-global-state"
-)
+export const ContextIdGlobalState = createContextId<GlobalState>("context-id-global-state")
 
 export const ContextProviderGlobalState = component$(() => {
   const globalState = useStore({
-    signInIconState: {
-      greeting: "",
-    },
     languageState: {
       selectedLanguage: "EN",
-      showLanguageWindow: false,
+      showLanguageWindow: false
     },
     modalState: {
       showModal: false,
-      modalCode: "",
+      modalCode: ""
     },
     sessionState: {
-      atExp: "",
-      isValidRtFound: false,
-      basicUserCheckDone: false,
+      userName: "",
+      cart: [""],
+      lang: "",
+      needVisibleTask: false,
+      at: "",
+      atExp: ""
     },
     mobile: {
-      showMenu: false,
-    },
+      showMenu: false
+    }
   })
 
   // Provide the context to children components

@@ -15,6 +15,8 @@ import { userProtectedTest } from "./route-handlers/user-protected-test.js"
 import { test001 } from "./route-handlers/test001.js"
 import { authTest } from "./route-handlers/authTest.js"
 
+import { cookieSettingTest } from "./route-handlers/cookie-setting-test.js"
+
 const startServer = async () => {
   try {
     const fastify = Fastify({ logger: true })
@@ -28,8 +30,11 @@ const startServer = async () => {
 
     // Routes 1. auth
     fastify.post("/auth-user-create", authUserCreate)
+
     fastify.post("/auth-user-login", authUserLogin)
     fastify.post("/auth-publish-at-from-rt", publishAtFromRtPlugin)
+
+    fastify.post("/cookie-test", cookieSettingTest)
 
     // /auth-user-login
     // /auth-user-logout
@@ -43,11 +48,7 @@ const startServer = async () => {
     // /auth-session-info – For fetching active session information, such as the current state of refresh tokens or login status.
 
     // Routes 2. protected
-    fastify.get(
-      "/user-area-test",
-      { preHandler: fastify.verifyAccessToken },
-      userProtectedTest
-    )
+    fastify.get("/user-area-test", { preHandler: fastify.verifyAccessToken }, userProtectedTest)
     fastify.get("/auth-test", authTest)
 
     const mo = process.env.MO

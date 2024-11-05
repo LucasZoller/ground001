@@ -1,5 +1,5 @@
 import { $, useContext } from "@builder.io/qwik"
-import { UserSignInPayload, DatabaseResponse } from "../types"
+import type { UserSignInPayload, SuccessfulSigninPayload } from "../types"
 import { BACK_URL } from "../config"
 import wretch from "wretch"
 
@@ -12,20 +12,22 @@ export const useSignInUser = () => {
   const nav = useNavigate()
   const authState = useContext(ContextIdAuthState)
   const signInUser = $(async (payload: UserSignInPayload) => {
-    const data = await wretch(`${BACK_URL}/auth-user-login`)
-      .options({ credentials: "include" })
-      .post(payload)
-      .json<DatabaseResponse>()
-
-    //if (data.dbSays) loginStateChanger(data.dbSays)
-
-    if (data.at && data.atExp) {
+    try {
+      const data = await wretch(`${BACK_URL}/auth-user-login`).options({ credentials: "include" }).post(payload).json<SuccessfulSigninPayload>()
       authState.at = data.at
       sessionState.atExp = data.atExp
+      sessionState.cart = data.cartItems
+      sessionState.lang = data.lang
+      sessionState.userName = data.userName
+
       console.log("authState at is this  : ", authState.at)
       nav("/account")
+      console.log("🎉🎉✨sessionState.atExp", sessionState.atExp)
+    } catch (err) {
+      //In case of some network error
+      sessionState.userName = ""
     }
-    console.log("🎉🎉✨sessionState.atExp", sessionState.atExp)
+
     //return data
   })
   return signInUser

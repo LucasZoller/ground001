@@ -3,14 +3,14 @@ import { Link } from "@builder.io/qwik-city"
 import { ContextIdGlobalState } from "~/context/ContextGlobalState"
 
 export const AccountMenu = component$(() => {
-  const { signInIconState } = useContext(ContextIdGlobalState)
+  const { sessionState } = useContext(ContextIdGlobalState)
   return (
     <>
       <div class="account-menu ptb10">
         <div class="text-align-center border-bottom">
-          {signInIconState.greeting ? (
+          {sessionState.greeting ? (
             <div class="pb10">
-              <span>Welcome back!</span>
+              <span>{sessionState.greeting}</span>
             </div>
           ) : (
             <>
