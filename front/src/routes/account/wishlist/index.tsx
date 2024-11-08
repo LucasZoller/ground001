@@ -32,11 +32,18 @@ export const onGet = async ({ cookie, redirect }: RequestEvent) => {
 }
 
 export default component$(() => {
-  const { userState, sessionState } = useAuth("/user-area-test")
+  const { userState, sessionState } = useAuth()
   return (
     <section>
       <Breadcrumbs />
-      {userState.user_code ? <div>If wish list has items, navigate to page 1 of the wishlist or display nothing</div> : <div>Nothing to show here</div>}
+      {userState.user_code ? (
+        <div>
+          If wish list has items, navigate to page 1 of the wishlist or display
+          nothing
+        </div>
+      ) : (
+        <div>Nothing to show here</div>
+      )}
     </section>
   )
 })

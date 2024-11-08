@@ -20,7 +20,7 @@ export const onGet = async ({ cookie, redirect }: RequestEvent) => {
 }
 
 export default component$(() => {
-  const { userState, sessionState } = useAuth("/user-area-test")
+  const { userState, sessionState } = useAuth()
 
   return (
     <section>

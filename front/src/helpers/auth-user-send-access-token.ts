@@ -1,15 +1,13 @@
-import { BACK_URL } from "../config"
-import wretch from "wretch"
-import { UserState, AuthState } from "../types"
 import { $ } from "@builder.io/qwik"
+import { BACK_URL } from "../config"
+import type { UserState, SessionState } from "../types"
+import wretch from "wretch"
 
-export const authUserSendAccessToken = $(async (authState: AuthState, userState: UserState, backendPath: string) => {
-  console.log("🎠🎠🎠🎠🎠🎠 Entered sendAccessToken => : Do we have access token in the global state?", authState.at)
-  const data = await wretch(`${BACK_URL}${backendPath}`)
-    .headers({ authorization: `Bearer ${authState.at}` })
+export const authUserSendAccessToken = $(async (sessionState: SessionState) => {
+  const data = await wretch(`${BACK_URL}/user-area-test`)
+    .headers({ authorization: `Bearer ${sessionState.at}` })
     .get()
     .json<UserState>()
-  console.log("🎠🎠🎠🎠🎠🎠 AT worked. This is the fetched data:", data)
 
   return data
 })

@@ -1,38 +1,78 @@
-import { component$, useContext, useTask$, useVisibleTask$ } from "@builder.io/qwik"
-import { Link, RequestEvent } from "@builder.io/qwik-city"
+import {
+  component$,
+  useContext,
+  useStore,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik"
+import { RequestEvent, useNavigate } from "@builder.io/qwik-city"
 import { useAuth } from "../../../hooks/useAuth"
 import { ContextIdGlobalState } from "../../../context/ContextGlobalState"
-import { modalCodes } from "../../../config"
-import ImgAknm024Thumb260px from "../../../../public/images/aknm024-thumb-260px.jpg?jsx"
-import { routeLoader$ } from "@builder.io/qwik-city"
+
+import { AccountPagesSignIn } from "~/components/AccountPages/LoggedOut/AccountPagesSignIn"
+
 import { Breadcrumbs } from "../../../components/UtilityComponents/Breadcrums"
 import { IndexOrders } from "../../../components/AccountPages/IndexOrders"
 //Fetch this data from the backend
 import { obj } from "./postgresData"
 
-// export const useProtectedRoute = routeLoader$(async ({ cookie }) => {
-//   const coo = cookie.get("cltoken")
-//   const poo = cookie.get("site-session")
-//   console.log("coo is : ", coo)
-//   console.log("poo is : ", poo)
+// export const onGet = async ({ cookie, redirect }: RequestEvent) => {
+//   // redirect to login page if not logged in
+//   const isAuthrized = cookie.get("site-session")
+
+//   if (!isAuthrized?.value) {
+//     throw redirect(302, "/portal/signin")
+//   }
+// }
+
+// export default component$(() => {
+//   const { modalState } = useContext(ContextIdGlobalState)
+//   const { userState } = useAuth()
+//   return (
+//     <section>
+//       <Breadcrumbs />
+//       {!modalState.showModal ? (
+//         <IndexOrders orderObjArr={obj} />
+//       ) : (
+//         <div>Nothing to show here</div>
+//       )}
+//     </section>
+//   )
 // })
 
-export const onGet = async ({ cookie, redirect }: RequestEvent) => {
-  // redirect to login page if not logged in
-  const isAuthrized = cookie.get("site-session")
-
-  if (!isAuthrized?.value) {
-    throw redirect(302, "/portal/signin")
-  }
-}
+const LoggedIn = component$(() => {
+  return <>Hey I am logged in!</>
+})
+const LoggedOut = component$(() => {
+  // const nav = useNavigate()
+  // nav("/portal/signin/")
+  return <>loading.....💎</>
+})
 
 export default component$(() => {
+  const { sessionState } = useAuth()
   const { modalState } = useContext(ContextIdGlobalState)
-  const { userState } = useAuth("/user-area-test")
+  const nav = useNavigate()
+
+  const flag = useStore({ render: false })
+
+  useVisibleTask$(({ track }) => {
+    track(() => sessionState.navigateToSignIn)
+    if (sessionState.navigateToSignIn) {
+      modalState.modalCode = "MODAL_USER_SIGNIN"
+      modalState.showModal = true
+      //nav("/portal/signin")
+      sessionState.navigateToSignIn = false
+    } else if (sessionState.userName) flag.render = true
+  })
+
   return (
-    <section>
-      <Breadcrumbs />
-      {!modalState.showModal ? <IndexOrders orderObjArr={obj} /> : <div>Nothing to show here</div>}
-    </section>
+    <>
+      {flag.render && (
+        <div>
+          <LoggedIn />
+        </div>
+      )}
+    </>
   )
 })

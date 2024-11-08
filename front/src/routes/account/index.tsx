@@ -3,7 +3,7 @@ import { useAuth } from "../../hooks/useAuth"
 import { Link } from "@builder.io/qwik-city"
 
 export default component$(() => {
-  const { userState, sessionState } = useAuth("/user-area-test")
+  const { userState, sessionState } = useAuth()
   return (
     <>
       <div>

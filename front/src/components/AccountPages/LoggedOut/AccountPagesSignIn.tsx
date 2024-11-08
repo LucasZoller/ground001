@@ -1,65 +1,45 @@
-import { $, component$, useContext, useStore, useTask$ } from "@builder.io/qwik"
+import { component$, useContext, useStore, useTask$ } from "@builder.io/qwik"
 import { ContextIdGlobalState } from "../../../context/ContextGlobalState"
-import { ContextIdAuthState } from "../../../context/ContextAuthState"
-import { BACK_URL, modalCodes } from "../../../config"
+import { useSignInUser } from "../../../hooks/useSignInUser"
+import { modalCodes } from "../../../config"
 import {
-  UserRegistrationPayload,
-  SuccessfulSignInPayload,
-} from "../../../types"
-import wretch from "wretch"
-import {
-  IconCheckCircle,
   IconClose,
   IconVisible,
   IconVisibleOff,
   IconWarning,
 } from "../../SvgComponents/Icon"
 
-const useRegisterUser = () => {
-  const registerUser = $(
-    async (
-      payload: UserRegistrationPayload
-    ): Promise<SuccessfulSignInPayload> => {
-      try {
-        const data = await wretch(`${BACK_URL}/auth-user-create`)
-          .options({ credentials: "include" })
-          .post(payload)
-          .json<SuccessfulSignInPayload>()
-        return data
-      } catch (err) {
-        throw err // Re-throwing to ensure the function returns a consistent type
-      }
-    }
-  )
-  return registerUser
-}
-
-export const ModalUserRegistration = component$(() => {
-  const { modalState, languageState, sessionState } =
-    useContext(ContextIdGlobalState)
-  const authState = useContext(ContextIdAuthState)
+export const AccountPagesSignIn = component$(() => {
+  const { modalState } = useContext(ContextIdGlobalState)
   const inputStore = useStore({
     emailFocused: false,
+    emailHelper: false,
     passwordFocused: false,
     passwordVisible: false,
-    emailHelper: false,
     passwordHelper: false,
     emailValue: "",
     passwordValue: "",
+    errorMessage: "",
+    isErrCodePresent: false,
   })
 
   useTask$(({ track }) => {
-    const watchEmailValue = track(() => inputStore.emailValue)
-    const watchPasswordValue = track(() => inputStore.passwordValue)
+    track(() => inputStore.emailValue)
+    track(() => inputStore.passwordValue)
+    inputStore.isErrCodePresent = false
+    inputStore.errorMessage = ""
 
-    if (watchEmailValue.length > 0 && inputStore.emailHelper === true) {
+    if (inputStore.emailValue.length > 0 && inputStore.emailHelper === true) {
       inputStore.emailHelper = false
     }
-    if (watchPasswordValue.length > 0 && inputStore.passwordHelper === true) {
+    if (
+      inputStore.passwordValue.length > 0 &&
+      inputStore.passwordHelper === true
+    ) {
       inputStore.passwordHelper = false
     }
   })
-  const registerUser = useRegisterUser()
+  const signInUser = useSignInUser()
 
   return (
     <>
@@ -70,21 +50,20 @@ export const ModalUserRegistration = component$(() => {
           onClick$={() => (modalState.modalCode = modalCodes.MODAL_CLOSE)}>
           <IconClose />
         </span>
-        <h2 class="font-13 ma">Join now for Free!</h2>
+        <h2 class="font-13 ma">Log in</h2>
         <p class="ma">
-          Sign up for free to AKNM.nl or{" "}
+          Log in to AKNM.nl or{" "}
           <span
             class="color-magenta pointer"
             onClick$={() =>
-              (modalState.modalCode = modalCodes.MODAL_USER_SIGNIN)
+              (modalState.modalCode = modalCodes.MODAL_USER_REGISTRATION)
             }>
-            Sign in
+            Create an Account
           </span>
         </p>
         <div class="">
           <div class="relative grid">
             <input
-              type="text"
               class="p10 w100 bg-gray-600 color-white font-08"
               onFocus$={() => (inputStore.emailFocused = true)}
               onBlur$={() => {
@@ -93,8 +72,8 @@ export const ModalUserRegistration = component$(() => {
               }}
               onInput$={(e) => {
                 inputStore.emailValue = (e.target as HTMLInputElement).value
+                console.log(inputStore.emailValue)
               }}
-              value={inputStore.emailValue}
             />
             <label
               class="absolute flex align-center h100 transition300"
@@ -123,7 +102,7 @@ export const ModalUserRegistration = component$(() => {
               </span>
             )}
           </div>
-          <div style={{ height: "18px" }}>
+          <div style={{ height: "20px" }}>
             {inputStore.emailHelper && (
               <span class="font-7 color-magenta">
                 Please enter your email address.
@@ -183,69 +162,63 @@ export const ModalUserRegistration = component$(() => {
               )}
             </span>
           </div>
-          <div style={{ height: "18px" }}>
+          <div style={{ height: "20px" }}>
             {inputStore.passwordHelper && (
               <span class="font-7 color-magenta">
-                Please enter the password.
+                Please enter your password.
               </span>
             )}
           </div>
         </div>
-        <div class="grid gap4 mb7">
-          <span class="font-9">Your password must have</span>
-          <div class="flex align-center gap5">
-            <span class="flex">
-              <IconCheckCircle />
-            </span>
-            <span class="font-8">Minimum 8 characters</span>
-          </div>
+        {inputStore.isErrCodePresent && (
+          <div class="font-7 color-magenta">{inputStore.errorMessage}</div>
+        )}
 
-          <div class="flex gap5 mtba">
-            <span class="flex">
-              <IconCheckCircle />
-            </span>
-            <span class="font-8">Letters, numbers, or special characters</span>
-          </div>
-        </div>
         <div
           class="mini-button-magenta font-10"
           onClick$={async () => {
             try {
-              const data = await registerUser({
-                email: inputStore.emailValue,
-                password: inputStore.passwordValue,
-                lang: languageState.selectedLanguage,
-              })
-
-              sessionState.userName = data.userName
-              sessionState.cart = data.cartItems
-              sessionState.lang = data.lang
-              sessionState.at = data.at
-              sessionState.atExp = data.atExp
-
-              modalState.modalCode =
-                modalCodes.MODAL_ACCOUNT_CREATION_SUCCESSFUL
-            } catch (err: any) {
-              if (err.json.code === "ERR_EMAIL_EXISTS") {
-                modalState.modalCode = modalCodes.MODAL_EMAIL_ALREADY_EXISTS
+              if (
+                inputStore.emailValue.length < 5 ||
+                inputStore.passwordValue.length < 3
+              ) {
+                inputStore.emailHelper = true
+                inputStore.passwordHelper = true
+              } else {
+                const db = await signInUser({
+                  email: inputStore.emailValue,
+                  password: inputStore.passwordValue,
+                })
               }
-              console.log(
-                "💀💀💀Error happened during user registration : ",
-                err
-              )
+            } catch (err: any) {
+              console.log("Can we have an err code? :", err)
+              console.log("Can we have an err code? :", err.json.code)
+              switch (err.json.code) {
+                case "ERR_USER_NOT_FOUND":
+                case "ERR_WRONG_PASSWORD":
+                  inputStore.isErrCodePresent = true
+                  inputStore.errorMessage = "User name or password is wrong."
+                  break
+                case "ERR_FORM_NOT_FILLED":
+                  inputStore.emailHelper = true
+                  inputStore.passwordHelper = true
+                  break
+              }
+
+              // Change messages depending on the database response.
             }
           }}>
-          Sign up for free
+          Sign in
         </div>
-        <div class="mtb5 font-7">
-          <span>
-            By continuing, you certify that you are 18 years of age or older and
-            you agree to aknm.nl’s{" "}
+        <div class="ma">
+          Forgot Password?{" "}
+          <span
+            class="color-magenta pointer"
+            onClick$={() =>
+              (modalState.modalCode = modalCodes.MODAL_FORGOT_PASSWORD)
+            }>
+            Click Here
           </span>
-          <span class="color-magenta pointer">Terms of Service</span>
-          <span> and confirm that you have read the aknm.nl’s </span>
-          <span class="color-magenta pointer">Privacy Notice</span>
-          <span>.</span>
         </div>
       </div>
     </>

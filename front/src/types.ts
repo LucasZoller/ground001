@@ -38,6 +38,8 @@ export type SessionState = {
   needVisibleTask: boolean // True to move on to the useVisibleTask from useTask.
   at: string // Access Token
   atExp: string
+  needAutomaticUserSignIn: number // AutomaticUserLogin is tracking this value.
+  navigateToSignIn: boolean //Navigate to singin if true.
 }
 
 export type Mobile = {
@@ -52,7 +54,7 @@ export type GlobalState = {
 }
 
 //Backend returns this payload upon successful login
-export type SuccessfulSigninPayload = {
+export type SuccessfulSignInPayload = {
   at: string
   atExp: string //timsestamp in milliseconds
   userName: string
@@ -137,7 +139,7 @@ export type TokenManagement = {
 export type UserRegistrationPayload = {
   email: string
   password: string
-  language: string
+  lang: string
 }
 
 export type UserSignInPayload = {

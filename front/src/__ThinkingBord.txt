@@ -1,15 +1,28 @@
 
-login required : /cart, /account
+automaticLogin
+=> Runs automatically on the first visit, page refresh.
+=> Set sessionState (userName, cart, lang, at, atExp) if cltoen/site-session is found in the browser.
+=> DO NOTHING if userName is found in the browser.
+=> DOES NOT check the validity of AT.
+=> Tracks sessionState `needAutomaticUserSignIn` 
 
-What user experience do we want?
 
-/cart/index.tsx
+useAuth
+=> Checks for AT.
+=> If AT is not present or invalid, looks for RT.
+=> If RT is present and valid, get AT.
+=> Set sessionState (userName, cart, lang, at, atExp).
+=> Set sessionState `needAutomaticUserSignIn`
 
-1: First visit, Page refresh => AT state is lost.
+Account pages loading component.
 
-Request has RT.
-site-session tells validity of RT
-If valid, we can use RT to fetch user name and cart items.
+
+Protected route
+
+1. Refresh/Innitial load
+2. Navigation
+
+
 
 
 

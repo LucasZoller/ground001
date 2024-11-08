@@ -1,4 +1,9 @@
-import { component$, useStore, useTask$, useVisibleTask$ } from "@builder.io/qwik"
+import {
+  component$,
+  useStore,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik"
 import { useLocation, useNavigate } from "@builder.io/qwik-city"
 
 import { useAuth } from "../../../../hooks/useAuth"
@@ -19,7 +24,7 @@ type WishItem = {
 }
 
 export default component$(() => {
-  const { userState, sessionState } = useAuth("/user-area-test")
+  const { userState, sessionState } = useAuth()
 
   const store = useStore({
     itemsPerPage: 5,
@@ -28,7 +33,7 @@ export default component$(() => {
     totalPages: 0,
     currentPage: 0,
     startIndex: 0,
-    endIndex: 0
+    endIndex: 0,
   })
 
   const location = useLocation()
@@ -50,7 +55,14 @@ export default component$(() => {
     <section>
       <Breadcrumbs />
 
-      {userState.user_code ? <IndexWish wishItemObjArr={store.arrForThisPage} isLastSlice={store.isLastSlice} /> : <div>Nothing to show here</div>}
+      {userState.user_code ? (
+        <IndexWish
+          wishItemObjArr={store.arrForThisPage}
+          isLastSlice={store.isLastSlice}
+        />
+      ) : (
+        <div>Nothing to show here</div>
+      )}
       <div class="mtb20">
         <Pagination totalPages={store.totalPages} />
       </div>

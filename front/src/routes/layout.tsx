@@ -4,7 +4,7 @@ import Footer from "../components/GlobalFooter/Footer"
 import Header from "../components/GlobalHeader/Header"
 import SubHeader from "../components/GlobalHeader/SubHeader"
 import ModalPortal from "../components/Modals/ModalPortal"
-import AutomaticUserLogin from "../components/logic/AutomaticUserLogin"
+import AutomaticUserSignIn from "../components/LogicComponents/AutomaticUserSignIn"
 import { ContextProviderGlobalState } from "../context/ContextGlobalState"
 import { ContextProviderUserState } from "../context/ContextUserState"
 import { ContextProviderAuthState } from "../context/ContextAuthState"
@@ -16,7 +16,7 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
     // Always serve a cached response by default, up to a week stale
     staleWhileRevalidate: 60 * 60 * 24 * 7,
     // Max once every 5 seconds, revalidate on the server to get a fresh version of this page
-    maxAge: 5
+    maxAge: 5,
   })
 }
 
@@ -27,7 +27,7 @@ export default component$(() => {
         <ContextProviderGlobalState>
           <ContextProviderUserState>
             <ContextProviderAuthState>
-              <AutomaticUserLogin />
+              <AutomaticUserSignIn />
               <div>
                 <Header />
                 <SubHeader />

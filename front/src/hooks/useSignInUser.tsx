@@ -1,5 +1,5 @@
 import { $, useContext } from "@builder.io/qwik"
-import type { UserSignInPayload, SuccessfulSigninPayload } from "../types"
+import type { UserSignInPayload, SuccessfulSignInPayload } from "../types"
 import { BACK_URL } from "../config"
 import wretch from "wretch"
 
@@ -13,12 +13,17 @@ export const useSignInUser = () => {
   const authState = useContext(ContextIdAuthState)
   const signInUser = $(async (payload: UserSignInPayload) => {
     try {
-      const data = await wretch(`${BACK_URL}/auth-user-login`).options({ credentials: "include" }).post(payload).json<SuccessfulSigninPayload>()
+      const data = await wretch(`${BACK_URL}/auth-user-login`)
+        .options({ credentials: "include" })
+        .post(payload)
+        .json<SuccessfulSignInPayload>()
       authState.at = data.at
-      sessionState.atExp = data.atExp
+      sessionState.userName = data.userName
       sessionState.cart = data.cartItems
       sessionState.lang = data.lang
-      sessionState.userName = data.userName
+
+      sessionState.at = data.at
+      sessionState.atExp = data.atExp
 
       console.log("authState at is this  : ", authState.at)
       nav("/account")

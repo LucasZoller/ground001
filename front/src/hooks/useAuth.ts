@@ -1,53 +1,35 @@
-import { useContext, useTask$, useVisibleTask$ } from "@builder.io/qwik"
+import { useContext, useTask$ } from "@builder.io/qwik"
+import { useNavigate } from "@builder.io/qwik-city"
 import { ContextIdGlobalState } from "../context/ContextGlobalState"
-import { ContextIdAuthState } from "../context/ContextAuthState"
 import { ContextIdUserState } from "../context/ContextUserState"
 import { authUserSendAccessToken } from "../helpers/auth-user-send-access-token"
-import { authUserSendRefreshToken } from "../helpers/auth-user-send-refresh-token"
 import { authUpdateUserData } from "../helpers/auth-update-user-data"
 
-export const useAuth = (path: string) => {
-  const { sessionState } = useContext(ContextIdGlobalState)
-  const authState = useContext(ContextIdAuthState)
+export const useAuth = () => {
+  const { sessionState, modalState } = useContext(ContextIdGlobalState)
   const userState = useContext(ContextIdUserState)
+  const nav = useNavigate()
+  //Only check the validity of AT.
+  //Let AutomaticUserLogin use RT to get new AT.
+  //AutomaticUserLogin sets AT as sessionState in the useVisibleTask$.
 
   useTask$(async ({ track }) => {
-    track(() => authState.at)
-    if (authState.at && sessionState.atExp) {
-      // 1: AT exists
+    track(() => sessionState.at)
+    // Trigger AutomaticUserLogin if at and atExp is not found in the memory.
+
+    if (sessionState.at && sessionState.atExp) {
+      // 1: at and atExp are both in memory
       if (Number(sessionState.atExp) > Date.now()) {
-        const data = await authUserSendAccessToken(authState, userState, path) // 1-1: At is valid
+        const data = await authUserSendAccessToken(sessionState) // 1-1: At is valid
         await authUpdateUserData(userState, data)
       } else {
-        sessionState.needVisibleTaskToGetRt = true // 2-1: AT exists, but is expired or invalid
+        sessionState.needAutomaticUserSignIn++ // 2-1: AT exists, but is expired or invalid
+        sessionState.at = "" // If AT is old, automaticUserSignIn hasn't updated the at yet.
       }
     } else {
-      sessionState.needVisibleTaskToGetRt = true // 2-2: AT is absent.
+      sessionState.needAutomaticUserSignIn++ // 2-2: AT is absent.
     }
   })
-  // eslint-disable-next-line qwik/no-use-visible-task
-  useVisibleTask$(
-    async ({ track }) => {
-      // 2 : AT is absent or expired/invalid.
-      track(() => sessionState.needVisibleTaskToGetRt)
-      track(() => sessionState.isValidRtFound)
-      if (sessionState.needVisibleTaskToGetRt && sessionState.isValidRtFound) {
-        // 2-1-1: AT is expired or invalid. RT is in the cookie and is valid. => update AT
-        // 2-2-1: AT is absent. RT is in the cookie and is valid. => update AT
-        try {
-          await authUserSendRefreshToken(authState, sessionState, path)
-        } catch (err) {
-          // 2-1-2: AT is expired or invalid. RT returned error.
-          // 2-2-2: AT is absent. RT returned error.
-        }
 
-        sessionState.needVisibleTaskToGetRt = false
-      } else {
-        // 2-1-3: AT is expired or invalid. RT is absent.
-        // 2-2-3: AT is absent. RT is absent.
-      }
-    },
-    { strategy: "document-ready" }
-  )
   return { userState, sessionState }
 }

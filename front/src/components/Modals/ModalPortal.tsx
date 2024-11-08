@@ -1,4 +1,4 @@
-import { $, component$, useComputed$, useContext, useTask$ } from "@builder.io/qwik"
+import { $, component$, useComputed$, useContext } from "@builder.io/qwik"
 import { ContextIdGlobalState } from "../../context/ContextGlobalState"
 import { ModalUserSignIn } from "./ModalParts/ModalUserSignIn"
 import { ModalUserRegistration } from "./ModalParts/ModalUserRegistration"
@@ -13,13 +13,15 @@ const modalComponentMap = {
   MODAL_FORGOT_PASSWORD: <ForgotPasswordModal />,
   MODAL_EMAIL_ALREADY_EXISTS: <EmailAlreadyExistsModal />,
   MODAL_ACCOUNT_CREATION_SUCCESSFUL: <AccountCreationSuccessModal />,
-  MODAL_CLOSE: null
+  MODAL_CLOSE: null,
 }
 
 export default component$(() => {
   const { modalState } = useContext(ContextIdGlobalState)
 
-  const showModal = useComputed$(() => !!modalComponentMap[modalState.modalCode])
+  const showModal = useComputed$(
+    () => !!modalComponentMap[modalState.modalCode]
+  )
 
   const handleOutsideModalClick = $((event: MouseEvent) => {
     if ((event.target as HTMLElement).classList.contains("overlay")) {

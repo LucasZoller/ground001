@@ -28,7 +28,10 @@ export const IndexOrders = component$(({ orderObjArr }: OrderObjectsArray) => {
       <div class="ma w100" style={{ maxWidth: "920px" }}>
         <h2 class="font-weight-600 font-11 ptb5">Your Orders</h2>
         {orderObjArr.map((singleOrderObj, index) => (
-          <div class="radius5 bg-gray-900" style={{ overflow: "hidden" }}>
+          <div
+            class="radius5 bg-gray-900"
+            style={{ overflow: "hidden" }}
+            key={singleOrderObj.orderId}>
             <div class="bg-gray-1000 p8 grid order-card-header">
               <div>
                 <div class="font-7">ORDER PLACED</div>
@@ -44,12 +47,20 @@ export const IndexOrders = component$(({ orderObjArr }: OrderObjectsArray) => {
               </div>
             </div>
             <div class="p8">
-              {singleOrderObj.items.map(singleItem => (
-                <div class="grid order-card-body prl8 ptb10" key={singleItem.productId}>
+              {singleOrderObj.items.map((singleItem) => (
+                <div
+                  class="grid order-card-body prl8 ptb10"
+                  key={singleItem.productId}>
                   <div class="flex">
                     <picture class="inline-block order-card-body-thumb mtba">
-                      <source srcset={singleItem.thumbSetObject.avif[0]} type="image/avif" />
-                      <source srcset={singleItem.thumbSetObject.jpeg[0]} type="image/jpeg" />
+                      <source
+                        srcset={singleItem.thumbSetObject.avif[0]}
+                        type="image/avif"
+                      />
+                      <source
+                        srcset={singleItem.thumbSetObject.jpeg[0]}
+                        type="image/jpeg"
+                      />
 
                       <img
                         width="320"
@@ -61,29 +72,41 @@ export const IndexOrders = component$(({ orderObjArr }: OrderObjectsArray) => {
                     </picture>
                     <div class="ml15">
                       <div class="font-9">{`${singleItem.productId}:`}</div>
-                      <div class="font-12 color-magenta pt4">{singleItem.productTitle}</div>
+                      <div class="font-12 color-magenta pt4">
+                        {singleItem.productTitle}
+                      </div>
                     </div>
                   </div>
                   <div class="flex order-card-buttons">
                     <div class="grid gap5">
                       <div class="flex-grid gap7 justify-center">
-                        <Link href={singleItem.streamingPath} class="mini-button-dolphin order-buttons-width">
+                        <Link
+                          href={singleItem.streamingPath}
+                          class="mini-button-dolphin order-buttons-width">
                           Play
                         </Link>
-                        <Link href={singleItem.downloadPath} class="mini-button-magenta order-buttons-width">
+                        <Link
+                          href={singleItem.downloadPath}
+                          class="mini-button-magenta order-buttons-width">
                           Download
                         </Link>
                       </div>
                       <div class="font-8 text-align-center">
                         <span>Available until : </span>
-                        <span class="color-success nowrap">{singleItem.expiryDate}</span>
+                        <span class="color-success nowrap">
+                          {singleItem.expiryDate}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-            {index === orderObjArr.length - 1 && <span class="end-of-list-border nowrap font-8 color-gray-600 mb10">End of your list</span>}
+            {index === orderObjArr.length - 1 && (
+              <span class="end-of-list-border nowrap font-8 color-gray-600 mb10">
+                End of your list
+              </span>
+            )}
           </div>
         ))}
       </div>
