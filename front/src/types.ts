@@ -7,7 +7,7 @@ export type Svg = {
   fill?: string
 }
 
-//AithState
+//AuthState
 export type AuthState = {
   at: string
 }
@@ -32,14 +32,13 @@ export type ModalCode =
   | "MODAL_CLOSE"
 
 export type SessionState = {
-  userName: string //Greeting message on the login icon.
-  cart: string[] //store cart items in string
-  lang: string //EN or JP
-  needVisibleTask: boolean // True to move on to the useVisibleTask from useTask.
-  at: string // Access Token
-  atExp: string
-  needAutomaticUserSignIn: number // AutomaticUserLogin is tracking this value.
-  navigateToSignIn: boolean //Navigate to singin if true.
+  userName?: string //Greeting message on the login icon.
+  cart?: string[] //store cart items in string
+  lang?: string //EN or JP
+
+  needVisibleTask?: boolean // True to move on to the useVisibleTask from useTask.
+  navigateToSignIn?: boolean //Navigate to singin if true.
+  authTicket?: boolean // True if AT was verified. User can enter protected routes.
 }
 
 export type Mobile = {
@@ -55,11 +54,15 @@ export type GlobalState = {
 
 //Backend returns this payload upon successful login
 export type SuccessfulSignInPayload = {
-  at: string
-  atExp: string //timsestamp in milliseconds
   userName: string
   cartItems: string[]
   lang: string
+  at: string
+  atExp: string // Timestamp in milliseconds
+  atExpInSec: string // For cookie MaxAge
+  rt: string
+  rtExp: string // Timestamp in milliseconds
+  rtExpInSec: string // For cookie MaxAge
 }
 
 //UserState

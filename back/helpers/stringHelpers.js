@@ -19,8 +19,9 @@ export const generateBase64FromTimeStamp = timestamp => {
   if (!timestamp) timestampInMs = Date.now() // Current timestamp in milliseconds
   else timestampInMs = new Date(timestamp).getTime().toString() // Converts timestamp to milliseconds
 
-  const timeStampInBase64 = Buffer.from(timestampInMs).toString("base64") // Convert to Base64
-  return timeStampInBase64
+  const timeStampInBase64 = Buffer.from(timestampInMs).toString("base64") // Convert to Base64 (Leaves "==" at the end.)
+  const base64url = timeStampInBase64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "") // Convert to Base64url encoding (No more "==").
+  return base64url
 }
 
 export const convertExpirationTimestampToCookieMaxAge = timestamp => {

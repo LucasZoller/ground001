@@ -6,6 +6,8 @@ import fastifyCookie from "@fastify/cookie"
 import { customCorsPlugin } from "./plugins/customCorsPlugin.js"
 import { customErrorHandlerPlugin } from "./plugins/customErrorHandlerPlugin.js"
 import { verifyAccessTokenPlugin } from "./plugins/verifyAccessTokenPlugin.js"
+import { verifyRefreshTokenPlugin } from "./plugins/verifyRefreshTokenPlugin.js"
+import { authUserPlugin } from "./plugins/authUserPlugin.js"
 
 import { authUserCreate } from "./route-handlers/auth-user-create.js"
 import { authUserLogin } from "./route-handlers/auth-user-login.js"
@@ -25,6 +27,7 @@ const startServer = async () => {
     await fastify.register(fastifyCookie)
     await fastify.register(customErrorHandlerPlugin)
     await fastify.register(verifyAccessTokenPlugin)
+    await fastify.register(authUserPlugin)
 
     fastify.get("/test", test001)
 
@@ -32,7 +35,7 @@ const startServer = async () => {
     fastify.post("/auth-user-create", authUserCreate)
 
     fastify.post("/auth-user-login", authUserLogin)
-    fastify.post("/auth-publish-at-from-rt", publishAtFromRtPlugin)
+    fastify.get("/auth-publish-at-from-rt", publishAtFromRtPlugin)
 
     fastify.post("/cookie-test", cookieSettingTest)
 
@@ -48,7 +51,12 @@ const startServer = async () => {
     // /auth-session-info – For fetching active session information, such as the current state of refresh tokens or login status.
 
     // Routes 2. protected
-    fastify.get("/user-area-test", { preHandler: fastify.verifyAccessToken }, userProtectedTest)
+    fastify.get("/user-area-test-with-at", { preHandler: fastify.verifyAccessToken }, userProtectedTest)
+    fastify.get("/user-area-test-with-rt", { preHandler: fastify.verifyRefreshToken }, userProtectedTest)
+
+    //🥦🥦🥦🥦↓↓↓↓↓↓↓↓↓MAKE THIS WORK!!!!!!!🥦🥦🥦🥦
+    fastify.get("/protected-item", { preHandler: fastify.authUser }, userProtectedTest)
+
     fastify.get("/auth-test", authTest)
 
     const mo = process.env.MO

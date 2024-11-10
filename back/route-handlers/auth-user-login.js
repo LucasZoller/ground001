@@ -62,10 +62,13 @@ export const authUserLogin = async (request, reply) => {
     const hashedRt = tempHashedRt
 
     const atExpTimestamp = tempAtDecodedObj.exp // Timestamp e.g 2024-09-30T10:01:47.201Z
+    //const atExp = new Date(atExpTimestamp).getTime() // Output in milliseconds
+    const atMaxAge = convertExpirationTimestampToCookieMaxAge(atExpTimestamp) // Output in seconds
+    const atExpInBase64Url = generateBase64FromTimeStamp(atExpTimestamp)
+
     const rtExpTimestamp = tempRtDecodedObj.exp // Timestamp e.g 2024-10-03T10:01:42.203Z
-    const atExp = new Date(atExpTimestamp).getTime() // Milliseconds
-    const rtMaxAge = convertExpirationTimestampToCookieMaxAge(rtExpTimestamp) // Outputs seconds
-    const rtExpInBase64Code = generateBase64FromTimeStamp(rtExpTimestamp)
+    const rtMaxAge = convertExpirationTimestampToCookieMaxAge(rtExpTimestamp) // Output in seconds
+    const rtExpInBase64Url = generateBase64FromTimeStamp(rtExpTimestamp)
     // 5. Update hashed_rt in the database
 
     await client.query(`UPDATE users SET hashed_rt=$1 WHERE user_code=$2`, [hashedRt, user.rows[0].user_code])
@@ -74,16 +77,30 @@ export const authUserLogin = async (request, reply) => {
 
     return (
       reply
-        .setCookie("cltoken", rawRt, {
+        .setCookie("torch", at, {
+          path: "/", // Makes the cookie accessible from all paths in the backend
+          httpOnly: true, //Prevents access via JavaScript
+          secure: process.env.NODE_ENV === "production", // Ensures it's only sent over HTTPS
+          sameSite: "Lax", // Prevents CSRF attacks
+          maxAge: atMaxAge // Seconds. NOT milliseconds.
+        })
+        .setCookie("flameout", atExpInBase64Url, {
+          path: "/",
+          httpOnly: true, // Accessible to JavaScript
+          secure: true, // Send only over HTTPS (set to false for local dev)
+          sameSite: "Strict",
+          maxAge: atMaxAge // Seconds. NOT milliseconds.
+        })
+        .setCookie("revive", rawRt, {
           path: "/", // Makes the cookie accessible from all paths in the backend
           httpOnly: true, //Prevents access via JavaScript
           secure: process.env.NODE_ENV === "production", // Ensures it's only sent over HTTPS
           sameSite: "Lax", // Prevents CSRF attacks
           maxAge: rtMaxAge // Seconds. NOT milliseconds.
         })
-        .setCookie("site-session", rtExpInBase64Code, {
+        .setCookie("end", rtExpInBase64Url, {
           path: "/",
-          httpOnly: false, // Accessible to JavaScript
+          httpOnly: true, // Accessible to JavaScript
           secure: true, // Send only over HTTPS (set to false for local dev)
           sameSite: "Strict",
           maxAge: rtMaxAge // Seconds. NOT milliseconds.
@@ -91,7 +108,7 @@ export const authUserLogin = async (request, reply) => {
 
         // 7. Send response
         .code(200)
-        .send({ at, atExp, userName: user.rows[0].user_name, cartItems: user.rows[0].cart, lang: user.rows[0].lang })
+        .send({ userName: user.rows[0].user_name, cartItems: user.rows[0].cart, lang: user.rows[0].lang })
     )
   } finally {
     if (client) client.release()

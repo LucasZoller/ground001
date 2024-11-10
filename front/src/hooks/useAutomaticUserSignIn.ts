@@ -1,9 +1,9 @@
 import { component$, useContext, useTask$, useVisibleTask$ } from "@builder.io/qwik"
-import { ContextIdGlobalState } from "../../context/ContextGlobalState"
-import { base64StringToNumberConverter } from "../../helpers/string-helpers"
+import { ContextIdGlobalState } from "../context/ContextGlobalState"
+import { base64StringToNumberConverter } from "../helpers/string-helpers"
 import wretch from "wretch"
-import { BACK_URL } from "../../config"
-import type { SuccessfulSignInPayload } from "../../types"
+import { BACK_URL } from "../config"
+import type { SuccessfulSignInPayload } from "../types"
 
 import { server$, useNavigate } from "@builder.io/qwik-city"
 
@@ -17,7 +17,7 @@ export const handleCookies = server$(function async() {
 //This component does nothing if userName already exists in the browser's memory.
 //Also, this component doesn't check the validity of AT, event if it is present in the memorey.
 
-export default component$(() => {
+export const UseAutomaticUserSignIn = () => {
   const { sessionState } = useContext(ContextIdGlobalState)
   const nav = useNavigate()
   useTask$(async ({ track }) => {
@@ -76,6 +76,4 @@ export default component$(() => {
       }
     }
   })
-
-  return <></>
-})
+}
