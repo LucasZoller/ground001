@@ -58,10 +58,8 @@ export type SuccessfulSignInPayload = {
   cartItems: string[]
   lang: string
   at: string
-  atExp: string // Timestamp in milliseconds
   atExpInSec: string // For cookie MaxAge
   rt: string
-  rtExp: string // Timestamp in milliseconds
   rtExpInSec: string // For cookie MaxAge
 }
 

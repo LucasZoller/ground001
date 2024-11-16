@@ -1,6 +1,6 @@
 import fp from "fastify-plugin"
 
-export const customErrorHandlerPlugin = fp(async fastify => {
+export const customErrorHandlerPlugin = fp(async (fastify) => {
   fastify.setErrorHandler((error, request, reply) => {
     switch (error.message) {
       case "ERR_FORM_NOT_FILLED":
@@ -19,7 +19,9 @@ export const customErrorHandlerPlugin = fp(async fastify => {
         reply.status(400).send({ code: "ERR_HASHING_FAILED", message: "" })
         break
       case "ERR_TOKEN_GENERATION_FAILED":
-        reply.status(400).send({ code: "ERR_TOKEN_GENERATION_FAILED", message: "" })
+        reply
+          .status(400)
+          .send({ code: "ERR_TOKEN_GENERATION_FAILED", message: "" })
         break
       case "ERR_WRONG_PASSWORD":
         reply.status(400).send({ code: "ERR_WRONG_PASSWORD", message: "" })
@@ -45,7 +47,7 @@ export const customErrorHandlerPlugin = fp(async fastify => {
         reply.status(400).send({ code: "ERR_RT_EXPIRED", message: "" })
         break
       case "ERR_RT_NOT_MATCHING":
-        console.log("🎊🎉🎊Successfully seen the expired RT!!!")
+        console.log("ClientRT is not matching with the RT in the DB...")
         reply.status(400).send({ code: "ERR_RT_NOT_MATCHING", message: "" })
         break
       case "ERR_INVALID_RT":

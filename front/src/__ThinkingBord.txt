@@ -1,13 +1,22 @@
 
-automaticLogin
-=> Runs automatically on the first visit, page refresh.
-=> Set sessionState (userName, cart, lang, at, atExp) if cltoen/site-session is found in the browser.
-=> DO NOTHING if userName is found in the browser.
-=> DOES NOT check the validity of AT.
-=> Tracks sessionState `needAutomaticUserSignIn` 
+RT = 3 days
+AT = 3 hours
+
+// CASE.1 : (!rt&&!at) Treat this user as a guest. DO NOTHING.
+// CASE.2 : (rt&&!at) Use RT to fetch state values. Set new AT and RT to the cookie.
+// CASE.3-1 : (rt&&at) Regular navigation => Already has memory states. DO NOTHING.
+// CASE.3-2 : (rt&&at) Reload or Stateless revisit => Use RT to fetch state values. Set new AT and RT to the cookie.
+
+CASE.2
+A logged in user leaves the PC untouched and comes back after 4 hours, and tries to refresh on a protected route.
+=>RT present, AT not present 
+
+CASE.3-2
+A logged in user reloads the page manually within 3 hours.
+=> At is still in the cookie but will become stateless. userName, cart, lang.
 
 
-useAuth
+/account (protected route)
 => Checks for AT.
 => If AT is not present or invalid, looks for RT.
 => If RT is present and valid, get AT.
@@ -19,7 +28,7 @@ Account pages loading component.
 
 Protected route
 
-1. Refresh/Innitial load
+1. Refresh/Innitial load 
 2. Navigation
 
 

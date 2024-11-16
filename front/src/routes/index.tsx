@@ -1,7 +1,8 @@
-import { component$ } from "@builder.io/qwik"
+import { component$, useContext } from "@builder.io/qwik"
 import {
   Link,
   routeLoader$,
+  useContent,
   useNavigate,
   type DocumentHead,
 } from "@builder.io/qwik-city"
@@ -10,6 +11,11 @@ import { BACK_URL } from "../config"
 import { Video, TestFastify } from "../types"
 
 import { obj } from "./postgresData"
+
+import {
+  ContextIdGlobalState,
+  ContextIdSimpleState,
+} from "../context/ContextGlobalState"
 
 export const useReadVid = routeLoader$(async () => {
   //This code runs only on the server, after every navigation
@@ -23,21 +29,11 @@ export const useReadVid = routeLoader$(async () => {
   }
 })
 
-export const useTestFastify = routeLoader$(async () => {
-  try {
-    const data = await wretch(`${BACK_URL}/test`).get().json<TestFastify>()
-    console.log(data)
-    return data
-  } catch (err) {
-    console.log(err)
-  }
-})
-
 export default component$(() => {
   const dbVids = useReadVid()
   const navigate = useNavigate()
-  const message = useTestFastify()
-
+  const { sessionState } = useContext(ContextIdGlobalState)
+  const simpleState = useContext(ContextIdSimpleState)
   return (
     // sidebar
     <div class="w100 flex">
@@ -48,6 +44,11 @@ export default component$(() => {
           backgroundColor: "var(--gray-500)",
           boxShadow: "0 0 8px var(--gray-700)",
         }}>
+        <div>
+          {sessionState.userName ? sessionState.userName : "no name found"}
+          {sessionState.lang ? sessionState.lang : "nothing"}
+        </div>
+        <Link href="/test/">Go to test</Link>
         <div class="bg-gray-100">some sidebar thingy</div>
         <div class="bg-gray-100">some sidebar thingy</div>
         <div class="bg-gray-100">some sidebar thingy</div>

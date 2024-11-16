@@ -6,12 +6,9 @@ import { generateMaxAgeAndTimestampInMsFromPasetoTokenHelper } from "../helpers/
 const pool = new pg.Pool(config.db)
 
 export const publishAtFromRtPlugin = async (request, reply) => {
-  //Frontend has already checked that : 1. RT exists 2. not expired
-  const headers = request.headers["authorization"] // RT from the frontend
-
+  const headers = request.headers["authorization"]
   if (!headers) throw new Error("ERR_NO_RT_HEADERS")
   if (!headers.startsWith("Bearer ")) throw new Error("ERR_INVALID_RT_HEADER")
-
   const clientRt = headers.split(" ")[1]
 
   // 1. Gain userCode from RT using Paseto
@@ -19,10 +16,11 @@ export const publishAtFromRtPlugin = async (request, reply) => {
   try {
     decodedRt = await V4.verify(clientRt, config.pasetoKeys.public.rt) // Decoding RT with Paseto
   } catch (err) {
-    if (err.code === "ERR_PASETO_CLAIM_INVALID") throw new Error("ERR_RT_EXPIRED", { cause: err })
-    //↑ This is rare. Shoud have been excluded by the frontend server.
+    if (err.code === "ERR_PASETO_CLAIM_INVALID")
+      throw new Error("ERR_RT_EXPIRED", { cause: err })
+    // Suspiciout case : Expired RT shouldn't exist in the cookie.
     throw new Error("ERR_INVALID_RT", { cause: err })
-    //↑ If this happens, the RT was faked by someone.
+    // Suspiciout case : Header was possibly modified and RT is fake.
   }
   const userCode = decodedRt.sub // We have the user_code from RT.
 
@@ -42,7 +40,10 @@ export const publishAtFromRtPlugin = async (request, reply) => {
 
     // 3. Kick out suspended user immediately
     if (user.rows[0].suspended === true) {
-      await client.query(`UPDATE users SET hashed_rt = $1 WHERE user_code=$2`, [null, userCode])
+      await client.query(`UPDATE users SET hashed_rt = $1 WHERE user_code=$2`, [
+        null,
+        userCode,
+      ])
       throw new Error("ERR_SUSPENDED") // Suspended user's hashed_rt is now null.
     }
 
@@ -54,8 +55,16 @@ export const publishAtFromRtPlugin = async (request, reply) => {
     // 5. Genrate new RT/AT
     let tempAt, tempRawRt, tempHashedRt
     try {
-      tempAt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.at, { expiresIn: config.expiration.paseto.at })
-      tempRawRt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.rt, { expiresIn: config.expiration.paseto.rt })
+      tempAt = await V4.sign(
+        { sub: user.rows[0].user_code },
+        config.pasetoKeys.secret.at,
+        { expiresIn: config.expiration.paseto.at }
+      )
+      tempRawRt = await V4.sign(
+        { sub: user.rows[0].user_code },
+        config.pasetoKeys.secret.rt,
+        { expiresIn: config.expiration.paseto.rt }
+      )
 
       // 6. Hash the new RT
 
@@ -66,27 +75,25 @@ export const publishAtFromRtPlugin = async (request, reply) => {
     const at = tempAt
     const rawRt = tempRawRt
     const hashedRt = tempHashedRt
-    const { atMaxAge, atExpInBase64Url, rtMaxAge, rtExpInBase64Url } = await generateMaxAgeAndTimestampInMsFromPasetoTokenHelper(at, rawRt)
+    const { atMaxAge, atExpInBase64Url, rtMaxAge, rtExpInBase64Url } =
+      await generateMaxAgeAndTimestampInMsFromPasetoTokenHelper(at, rawRt)
+
     // 7. Update hashed_rt in the database (RT rotation)
+    await client.query(`UPDATE users SET hashed_rt=$1 WHERE user_code=$2`, [
+      hashedRt,
+      user.rows[0].user_code,
+    ])
 
-    await client.query(`UPDATE users SET hashed_rt=$1 WHERE user_code=$2`, [hashedRt, user.rows[0].user_code])
-
-    // 8. Send rawRT via httpOnly Cookie
-
-    reply
-      // 9. Send AT
-      .code(200)
-      .send({
-        userName: user.rows[0].user_name,
-        cartItems: user.rows[0].cart,
-        lang: user.rows[0].lang,
-        at,
-        atExp: atExpInBase64Url,
-        atExpInSec: atMaxAge,
-        rt: rawRt,
-        rtExp: rtExpInBase64Url,
-        rtExpInSec: rtMaxAge
-      })
+    // 8. Send the results
+    reply.code(200).send({
+      userName: user.rows[0].user_name,
+      cartItems: user.rows[0].cart,
+      lang: user.rows[0].lang,
+      at,
+      atExpInSec: atMaxAge,
+      rt: rawRt,
+      rtExpInSec: rtMaxAge,
+    })
   } finally {
     if (client) {
       client.release() // Release the client back to the pool
