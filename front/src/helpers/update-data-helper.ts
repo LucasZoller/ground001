@@ -10,10 +10,13 @@ type TempSessionState = {
   rtExpInSec?: string
 }
 
-export const updateTempDataHelper = (
-  tempStore: TempSessionState,
-  payload: SuccessfulSignInPayload
-) => {
+type ConcisePayload = {
+  userName?: string
+  cart?: string[]
+  lang?: string
+}
+
+export const updateTempDataHelper = (tempStore: TempSessionState, payload: SuccessfulSignInPayload) => {
   //Basic user info
   tempStore.userName = payload.userName
   tempStore.cart = payload.cartItems
@@ -24,13 +27,11 @@ export const updateTempDataHelper = (
   //Refresh token
   tempStore.rt = payload.rt
   tempStore.rtExpInSec = payload.rtExpInSec
+
   return tempStore
 }
 
-export const updateSessionStateHelper = (
-  sessionState: SessionState,
-  tempStore: TempSessionState
-) => {
+export const updateSessionStateHelper = (sessionState: SessionState, tempStore: TempSessionState | ConcisePayload) => {
   sessionState.cart = tempStore.cart
   sessionState.lang = tempStore.lang
   sessionState.userName = tempStore.userName

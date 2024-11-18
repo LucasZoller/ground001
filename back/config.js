@@ -16,7 +16,9 @@ const {
   PASETO_PUBLIC_KEY_AT,
   PASETO_PUBLIC_KEY_RT,
   RT_EXPIRATION,
-  AT_EXPIRATION
+  AT_EXPIRATION,
+  AUTH_GUARD_HASH_AT,
+  AUTH_GUARD_HASH_RT
 } = process.env
 
 // Centralized environment variable validation
@@ -34,7 +36,9 @@ if (
   !PASETO_PUBLIC_KEY_AT ||
   !PASETO_PUBLIC_KEY_RT ||
   !RT_EXPIRATION ||
-  !AT_EXPIRATION
+  !AT_EXPIRATION ||
+  !AUTH_GUARD_HASH_AT ||
+  !AUTH_GUARD_HASH_RT
 ) {
   throw new Error("ERR_MISSING_ENVIRONMENT_VARIABLES")
 }
@@ -72,5 +76,10 @@ export const config = {
       rt: RT_EXPIRATION, // e.g., "72 hours"
       at: AT_EXPIRATION // e.g., "5 seconds"
     }
+  },
+  // For authUser middleware plugin,
+  guardHash: {
+    at: AUTH_GUARD_HASH_AT,
+    rt: AUTH_GUARD_HASH_RT
   }
 }

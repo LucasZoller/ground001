@@ -6,11 +6,11 @@ export const cookieSettingTest = async (request, reply) => {
   let client
   try {
     reply
-      .setCookie("neu", "rawRt", {
+      .setCookie("neuNeu", "rawRt", {
         path: "/", // Makes the cookie accessible from all paths in the backend
         httpOnly: false
       })
-      .setCookie("pooooo", "rtExpInBase64Code", {
+      .setCookie("pooooonnnn", "rtExpInBase64Code", {
         path: "/",
         httpOnly: false, // Accessible to JavaScript
         secure: false, // Send only over HTTPS (set to false for local dev)

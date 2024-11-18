@@ -87,45 +87,5 @@ export const useAuth = (backendPath: string) => {
     if (tempStore.navigateToSignIn) nav("/portal/signin/")
   })
 
-  //   useVisibleTask$(async ({ track }) => {
-  //     track(() => tempStore.needVisibleTask)
-  //     if (tempStore.needVisibleTask) {
-  //       // 6: Update cookies (Only works with useVisibletask$)
-  //       setCookieHelper(tempStore.rt, tempStore.rtExp, tempStore.rtExpInSec, tempStore.at, tempStore.atExp, tempStore.atExpInSec)
-
-  //       // 7: Update session state.
-  //       updateSessionStateHelper(sessionState, tempStore)
-
-  //       // 8: Reset the needVisibleTask back to false.
-  //       tempStore.needVisibleTask = false
-  //     }
-  //   })
-
-  // const { sessionState, modalState } = useContext(ContextIdGlobalState)
-  // const userState = useContext(ContextIdUserState)
-  // const nav = useNavigate()
-  // //Only check the validity of AT.
-  // //Let AutomaticUserLogin use RT to get new AT.
-  // //AutomaticUserLogin sets AT as sessionState in the useVisibleTask$.
-
-  // useTask$(async ({ track }) => {
-  //   track(() => sessionState.at)
-  //   // Trigger AutomaticUserLogin if at and atExp is not found in the memory.
-
-  //   if (sessionState.at && sessionState.atExp) {
-  //     // 1: at and atExp are both in memory
-  //     if (Number(sessionState.atExp) > Date.now()) {
-  //       const data = await authUserSendAccessToken(sessionState) // 1-1: At is valid
-  //       await authUpdateUserData(userState, data)
-  //       sessionState.navigateToSignIn = false
-  //     } else {
-  //       sessionState.needAutomaticUserSignIn++ // 2-1: AT exists, but is expired or invalid
-  //       sessionState.at = "" // If AT is old, automaticUserSignIn hasn't updated the at yet.
-  //     }
-  //   } else {
-  //     sessionState.needAutomaticUserSignIn++ // 2-2: AT is absent.
-  //   }
-  // })
-
   return sessionState
 }

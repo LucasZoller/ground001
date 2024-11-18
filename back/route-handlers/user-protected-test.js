@@ -4,19 +4,19 @@ import { config } from "../config.js"
 const pool = new pg.Pool(config.db)
 
 export const userProtectedTest = async (request, reply) => {
-  console.log("🎁🎁🎁Actual contents of userProtectedTest🎁🎁🎁")
+  console.log("🎁🎁🎁🎁🎁🎁Actual contents of userProtectedTest🎁🎁🎁")
   console.log("🌛🌛🌛This is the request from the protected route. What shape is this? : ", request.payload)
-  const { userCode } = request.payload
+  const { userCode, tokenType, guardHash } = request.payload //{ userCode, tokenType: "RT", guardHash: config.guardHash.rt }
+
+  if (tokenType === "AT" && guardHash !== config.guardHash.at) throw new Error("ERR_GUARD_AT_NOT_MATCHING")
+  if (tokenType === "RT" && guardHash !== config.guardHash.rt) throw new Error("ERR_GUARD_RT_NOT_MATCHING")
 
   let client
   try {
     client = await pool.connect()
-    console.log("Total clients in the pool:", pool.totalCount)
-    console.log("Idle clients in the pool:", pool.idleCount)
-    console.log("Waiting requests for a client:", pool.waitingCount)
     const user = await client.query(
       `
-        SELECT lang, user_name, email, created_at, last_modified_at, suspended, hashed_rt FROM users WHERE user_code=$1
+        SELECT lang, user_name, email, cart, created_at, last_modified_at, suspended FROM users WHERE user_code=$1
         `,
       [userCode]
     )
@@ -29,29 +29,13 @@ export const userProtectedTest = async (request, reply) => {
     console.log("user.rows : ", user.rows)
     console.log("user.rows[0] : ", user.rows[0])
 
-    // request.payload = {
-    //   userCode: obj?.userCode,
-    //   at: obj?.at,
-    //   atExp: obj?.atExpInBase64Url,
-    //   atExpInSec: obj?.atMaxAge,
-    //   rt: obj?.rawRt,
-    //   rtExp: obj?.rtExpInBase64Url,
-    //   rtExpInSec: obj?.rtMaxAge
-    // }
     const data = {
+      verified: true,
+      userCode,
       basics: {
-        user_code: userCode,
         user_name: user.rows[0].user_name,
         lang: user.rows[0].lang,
-        email: user.rows[0].email,
-        created_at: user.rows[0].created_at,
-        last_modified_at: user.rows[0].last_modified_at,
-        at: request.payload.at,
-        atExp: request.payload.atExp,
-        atExpInSec: request.payload.atExpInSec,
-        rt: request.payload.rt,
-        rtExp: request.payload.rtExp,
-        rtExpInSec: request.payload.rtExpInSec
+        cart: user.rows[0].cart
       },
       routeSpecific: { message: "🎊🎊🎊Successfully logged in! Welcome🎊🎊🎊" }
     }

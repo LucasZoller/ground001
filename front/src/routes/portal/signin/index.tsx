@@ -18,7 +18,7 @@ export default component$(() => {
     errorMessage: "",
     isErrCodePresent: false
   })
-
+  const count = useStore({ val: 0 })
   useTask$(({ track }) => {
     track(() => inputStore.emailValue)
     track(() => inputStore.passwordValue)
@@ -32,7 +32,14 @@ export default component$(() => {
       inputStore.passwordHelper = false
     }
   })
+
   const userSignIn = useSignInUser()
+  // ↑ 2024.Nov 16th : This never runs on server-side. It is always run client-side.
+  // Because userSignIn is triggered by a user click.
+  // User click can only happen after the page has been rendered.
+  // So, the cookie setting works even without being inside useVisibleTask$.
+
+  //That's the reason why it is
 
   return (
     <>
