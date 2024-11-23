@@ -1,8 +1,19 @@
 import { component$, useContext } from "@builder.io/qwik"
-import { ContextIdUserState } from "~/context/ContextUserState"
 import { Breadcrumbs } from "../../../components/UtilityComponents/Breadcrums"
+import { ContextIdGlobalState } from "~/context/ContextGlobalState"
+import { useBanIdlePrefetch } from "~/hooks/useBanIdlePrefetch"
+import { routeLoader$ } from "@builder.io/qwik-city"
+import { fetchProtectedDataHelper } from "~/helpers/fetch-helpers"
+
+export const useProtectedDataLoader = routeLoader$(async ({ cookie }) => {
+  return fetchProtectedDataHelper(cookie, "/protected/account-settings")
+})
+
 export default component$(() => {
-  const userState = useContext(ContextIdUserState)
+  const { sessionState } = useContext(ContextIdGlobalState)
+
+  const allowDisplay = useBanIdlePrefetch()
+  const data = useProtectedDataLoader()
   return (
     <>
       <Breadcrumbs />
@@ -11,22 +22,22 @@ export default component$(() => {
         <div>
           <div>
             <span>Customer ID : </span>
-            <span>{userState.user_code}</span>
+            <span>{}</span>
           </div>
           <div>
             <span>Nickname : </span>
-            <span>{userState.user_name}</span>
+            <span>{}</span>
             <span>Update</span>
           </div>
           <div>
             <span>Email : </span>
-            <span>{userState.email}</span>
+            <span>{}</span>
             <span>Update</span>
           </div>
           <div>-----</div>
           <div>
             <span>Language Preference : </span>
-            <span>{userState.lang}</span>
+            <span>{}</span>
             <span>Update</span>
           </div>
           <div>

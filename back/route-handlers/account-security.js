@@ -3,7 +3,7 @@ import { config } from "../config.js"
 
 const pool = new pg.Pool(config.db)
 
-export const userProtectedTest = async (request, reply) => {
+export const accountSecurity = async (request, reply) => {
   const { userCode, tokenType, guardHash } = request.payload //{ userCode, tokenType: "RT", guardHash: config.guardHash.rt }
 
   if (tokenType !== "AT") throw new Error("ERR_INVALID_PAYLOAD")

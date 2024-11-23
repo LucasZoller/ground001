@@ -23,13 +23,7 @@ export type ModalState = {
   showModal: boolean
   modalCode: ModalCode
 }
-export type ModalCode =
-  | "MODAL_USER_SIGNIN"
-  | "MODAL_USER_REGISTRATION"
-  | "MODAL_FORGOT_PASSWORD"
-  | "MODAL_EMAIL_ALREADY_EXISTS"
-  | "MODAL_ACCOUNT_CREATION_SUCCESSFUL"
-  | "MODAL_CLOSE"
+export type ModalCode = "MODAL_USER_SIGNIN" | "MODAL_USER_REGISTRATION" | "MODAL_FORGOT_PASSWORD" | "MODAL_EMAIL_ALREADY_EXISTS" | "MODAL_ACCOUNT_CREATION_SUCCESSFUL" | "MODAL_CLOSE"
 
 export type SessionState = {
   userName?: string //Greeting message on the login icon.
@@ -55,12 +49,20 @@ export type GlobalState = {
 //Backend returns this payload upon successful login
 export type SuccessfulSignInPayload = {
   userName: string
-  cartItems: string[]
+  cart: string[]
   lang: string
   at: string
+  atExpInBase64Url: string // AT expiration timestamp in base64
   atExpInSec: string // For cookie MaxAge
   rt: string
+  rtExpInBase64Url: string // RT expiration timestamp in base64
   rtExpInSec: string // For cookie MaxAge
+}
+
+export type ProtectedData = {
+  verified: boolean
+  userCode: string
+  protected: any
 }
 
 //UserState

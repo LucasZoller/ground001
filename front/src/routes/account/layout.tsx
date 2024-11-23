@@ -1,14 +1,38 @@
-// src/routes/account/layout.tsx
-import { component$, Slot, useContext } from "@builder.io/qwik"
-import { Link } from "@builder.io/qwik-city"
+import { component$, Slot } from "@builder.io/qwik"
+import { Link, RequestHandler } from "@builder.io/qwik-city"
 
 import { ContextProviderUserState } from "../../context/ContextUserState"
 
 import { ContextIdGlobalState } from "~/context/ContextGlobalState"
+import wretch from "wretch"
+import { BACK_URL } from "../../config"
+import type { SuccessfulSignInPayload } from "../../types"
+import { cookieHelper } from "../../helpers/cookie-helper"
 
+// onGet will be triggered by prefetch.
+export const onGet: RequestHandler = async ({ cookie, redirect }) => {
+  console.log(`${Math.random()}🐞🐞🐞Tell me if the layout is triggered!`)
+  const rt = cookie.get("revive")?.value
+
+  if (!rt) throw redirect(302, "/portal/signin") // Guest user.
+  const at = cookie.get("torch")?.value // undefined if absent
+  if (!at) {
+    // CASE 2-1 : Get AT from RT. Update both RT&AT in the cookie.
+    try {
+      const payload = await wretch(`${BACK_URL}/auth-publish-at-from-rt`)
+        .headers({ authorization: `Bearer ${rt}` })
+        .get()
+        .json<SuccessfulSignInPayload>()
+
+      // Shape of payload {userName, cart, lang, rt, rtExpInBase64Url, rtExpInSec, at, atExpInBase64Url, atExpInSec }
+      cookieHelper(cookie, payload.rt, payload.rtExpInBase64Url, payload.rtExpInSec, payload.at, payload.atExpInBase64Url, payload.atExpInSec)
+    } catch (err: any) {
+      //Error during "wretch(`${BACK_URL}/auth-publish-at-from-rt`)"
+      throw redirect(302, "/portal/signin")
+    }
+  }
+}
 export default component$(() => {
-  // const { sessionState } = useContext(ContextIdGlobalState)
-  // console.log("Testing is I can access context values now from the layout in the root of protected route! ", sessionState.at)
   return (
     <>
       <ContextProviderUserState>

@@ -5,11 +5,12 @@ import argon2 from "argon2"
 import { generateMaxAgeAndTimestampInMsFromPasetoTokenHelper } from "../helpers/tokenHelpers.js"
 const pool = new pg.Pool(config.db)
 
-export const publishAtFromRtPlugin = async (request, reply) => {
-  if (!request.cookies) throw new Error("ERR_NO_COOKIES_FOUND")
-  if (!request.cookies.revive) throw new Error("ERR_NO_RT_FOUND")
-
-  const clientRt = request.cookies.revive
+export const authPublishAtFromRt = async (request, reply) => {
+  const header = request.headers["authorization"]
+  console.log("headers in the backend", header)
+  const clientRt = header.split(" ")[1]
+  console.log("what is the rt now??", clientRt)
+  //const clientRt = request.cookies.revive
 
   // 1. Gain userCode from RT using Paseto
   let decodedRt
@@ -51,8 +52,12 @@ export const publishAtFromRtPlugin = async (request, reply) => {
     // 5. Genrate new RT/AT
     let tempAt, tempRawRt, tempHashedRt
     try {
-      tempAt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.at, { expiresIn: config.expiration.paseto.at })
-      tempRawRt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.rt, { expiresIn: config.expiration.paseto.rt })
+      tempAt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.at, {
+        expiresIn: config.expiration.paseto.at,
+      })
+      tempRawRt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.rt, {
+        expiresIn: config.expiration.paseto.rt,
+      })
 
       // 6. Hash the new RT
 
@@ -63,36 +68,25 @@ export const publishAtFromRtPlugin = async (request, reply) => {
     const at = tempAt
     const rawRt = tempRawRt
     const hashedRt = tempHashedRt
-    const { atMaxAge, rtMaxAge } = await generateMaxAgeAndTimestampInMsFromPasetoTokenHelper(at, rawRt)
+    const { atMaxAge, atExpInBase64Url, rtMaxAge, rtExpInBase64Url } = await generateMaxAgeAndTimestampInMsFromPasetoTokenHelper(at, rawRt)
     console.log("MAXAGE AT : ", atMaxAge)
     console.log("MAXAGE RT : ", rtMaxAge)
     // 7. Update hashed_rt in the database (RT rotation)
-    console.log("🥔🥔🥔🥔This is the hashedRT that publishAtFromRtPlugin via AutomaticUserOnboarding has saved in the DB : ", hashedRt)
+
     await client.query(`UPDATE users SET hashed_rt=$1 WHERE user_code=$2`, [hashedRt, user.rows[0].user_code])
 
     // 8. Send the results
-    return reply
-      .setCookie("torch", at, {
-        path: "/", // Makes the cookie accessible from all paths in the backend
-        httpOnly: true, //Prevents access via JavaScript
-        secure: process.env.NODE_ENV === "production", // Ensures it's only sent over HTTPS
-        sameSite: "Lax", // Prevents CSRF attacks
-        maxAge: atMaxAge // Seconds. NOT milliseconds.
-      })
-      .setCookie("revive", rawRt, {
-        path: "/", // Makes the cookie accessible from all paths in the backend
-        httpOnly: true, //Prevents access via JavaScript
-        secure: process.env.NODE_ENV === "production", // Ensures it's only sent over HTTPS
-        sameSite: "Lax", // Prevents CSRF attacks
-        maxAge: rtMaxAge // Seconds. NOT milliseconds.
-      })
-
-      .code(200)
-      .send({
-        userName: user.rows[0].user_name,
-        cartItems: user.rows[0].cart,
-        lang: user.rows[0].lang
-      })
+    return reply.code(200).send({
+      userName: user.rows[0].user_name,
+      cart: user.rows[0].cart,
+      lang: user.rows[0].lang,
+      rt: rawRt,
+      rtExpInBase64Url,
+      rtExpInSec: rtMaxAge,
+      at,
+      atExpInBase64Url,
+      atExpInSec: atMaxAge,
+    })
   } finally {
     if (client) {
       client.release() // Release the client back to the pool

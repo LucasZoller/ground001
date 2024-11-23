@@ -15,13 +15,7 @@ export const ContextIdGlobalState = createContextId<GlobalState>(
   "context-id-global-state"
 )
 
-export const ContextIdSimpleState = createContextId("context-id-simple-state")
-
 export const ContextProviderGlobalState = component$(() => {
-  const simpleState = useStore({
-    userName: "I am the default value of userName🌝🌝🌝",
-    lang: "I am the default value of lang🌝🌝🌝",
-  })
   const globalState = useStore({
     languageState: {
       selectedLanguage: "EN",
@@ -46,7 +40,6 @@ export const ContextProviderGlobalState = component$(() => {
 
   // Provide the context to children components
   useContextProvider(ContextIdGlobalState, globalState)
-  useContextProvider(ContextIdSimpleState, simpleState)
   return (
     <>
       <Slot />

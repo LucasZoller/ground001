@@ -2,34 +2,64 @@
 RT = 3 days
 AT = 3 hours
 
-// CASE.1 : (!rt&&!at) Treat this user as a guest. DO NOTHING.
-// CASE.2 : (rt&&!at) Use RT to fetch state values. Set new AT and RT to the cookie.
-// CASE.3-1 : (rt&&at) Regular navigation => Already has memory states. DO NOTHING.
-// CASE.3-2 : (rt&&at) Reload or Stateless revisit => Use RT to fetch state values. Set new AT and RT to the cookie.
+// Order of execution
+// Initial render by root layout (Update AT & sessionState) => Any protected routes
 
-CASE.2
-A logged in user leaves the PC untouched and comes back after 4 hours, and tries to refresh on a protected route.
-=>RT present, AT not present 
+// sessionState {userName, cart, lang}
+// Root layout updates sessionState immediately during the initial render.
+// After initial render, sessionState will last as long as the session lasts.
+// In case of very long session (> 3 hours), AT can expired first.
 
-CASE.3-2
-A logged in user reloads the page manually within 3 hours.
-=> At is still in the cookie but will become stateless. userName, cart, lang.
+// Guest
+// No RT means this user is a guest.
+// Guest is immediately redirected on any protected routes.
 
-
-/account (protected route)
-=> Checks for AT.
-=> If AT is not present or invalid, looks for RT.
-=> If RT is present and valid, get AT.
-=> Set sessionState (userName, cart, lang, at, atExp).
-=> Set sessionState `needAutomaticUserSignIn`
-
-Account pages loading component.
+// CASE 1 : (!rt) => Guest. Redirect immediately.
+// CASE 2-1 : (rt&&!at) => AT from initial render has expired due to very long session.
+// CASE 2-2 : (rt&&at) => AT from initial render is still alive in this session.
 
 
-Protected route
+//Protected routes
+// account/items
+// account/orders
+// account/security
+// account/settings
+// account/wishlist
 
-1. Refresh/Innitial load 
-2. Navigation
+//Wishlist
+// A wishlist can hold 20 items max.
+// A user can have 5 wishlists max.
+// Each wishlist can be renamed. 
+// Each wishlist can be navigated by /account/wishlist/my-wishlist
+// Search operation in the user browser and not in the database.
+// Join wishlist table and product table for a complete wishlist data.
+// list_data column in the wishlist table is JSONB.
+
+
+// Protected route behaviour
+// What we want :
+// As soon as the AT disappears from the cookie, we want to either use RT or redirect.
+// In an edge case, a user can hover over a link (prefetch), wait 3 hours and navigate to that same link. 
+// Here, we want the AT check to happen at the time of navigation. Prefetch is irrelevant.
+
+
+
+
+The advantage of useVisibleTask
+// We can trigger the AT check on navigation.
+
+// useTask behaviour
+// useTask in the layout DOES NOT RUN on every navigation, if the navigation is within the layout's route.
+// e.g. navigating '/account/' => '/account/items' does not trigger useTask.
+// To make sure that the above navigation triggers useTask, useTask has to be declared on each route.
+
+
+// Strange reload behaviour
+// Prefetch won't happen on the route that reload was performed.
+// e.g. If page-reload was perfomed on /a/ , hovering over on /a/ from /b/ won't trigger a prefetch.
+
+
+
 
 
 

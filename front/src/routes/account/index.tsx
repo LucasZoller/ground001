@@ -1,22 +1,32 @@
-import { component$ } from "@builder.io/qwik"
-import { useAuth } from "../../hooks/useAuth"
+import { component$, useContext, useTask$ } from "@builder.io/qwik"
 import { Link } from "@builder.io/qwik-city"
+import { ContextIdGlobalState } from "../../context/ContextGlobalState"
+import { isBrowser, isServer } from "@builder.io/qwik/build"
 
 export default component$(() => {
-  const { userState, sessionState } = useAuth("/user-area-test")
+  const { sessionState } = useContext(ContextIdGlobalState)
+  useTask$(() => {
+    if (isServer) {
+      console.log("🐢🐢🐢task is running from layout.")
+    }
+    if (isBrowser) {
+      console.log("🐢🐢🐢🐢🐢🐢task is running from layout.")
+    }
+  })
+
   return (
     <>
       <div>
-        {userState.user_code ? (
+        {sessionState.userName ? (
           <div>
-            <h3>{`Your Account : Welcome back, ${userState.user_name}!😊`}</h3>
-            <div>{`Your mail :  ${userState.email}!📨`}</div>
+            <h3>{`Your Account : Welcome back, ${sessionState.userName}!😊`}</h3>
           </div>
         ) : (
           <div>
             <span>Your Account</span>
           </div>
         )}
+        <div>{sessionState.lang === "EN" ? `Your language setting is currently English.` : `Your language setting is currently Japanese`}</div>
         <div>
           <h4>Information</h4>
           <span>New Arrivals!</span>
@@ -39,7 +49,7 @@ export default component$(() => {
               <Link href="/account/security">Login & Security</Link>
             </div>
             <div class="mini-button-dolphin w300px m5">
-              <Link href="/account/information">Your Account Information</Link>
+              <Link href="/account/settings">Your Account Settings</Link>
             </div>
           </div>
           <div>

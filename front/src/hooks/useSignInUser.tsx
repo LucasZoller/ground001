@@ -13,10 +13,13 @@ export const useSignInUser = () => {
   const authState = useContext(ContextIdAuthState)
   const signInUser = $(async (payload: UserSignInPayload) => {
     try {
-      const data = await wretch(`${BACK_URL}/auth-user-login`).options({ credentials: "include" }).post(payload).json<SuccessfulSignInPayload>()
+      const data = await wretch(`${BACK_URL}/auth-user-signin`)
+        .options({ credentials: "include" })
+        .post(payload)
+        .json<SuccessfulSignInPayload>()
       authState.at = data.at
       sessionState.userName = data.userName
-      sessionState.cart = data.cartItems
+      sessionState.cart = data.cart
       sessionState.lang = data.lang
 
       //sessionState.at = data.at

@@ -1,43 +1,39 @@
 import Fastify from "fastify"
 import "dotenv/config"
 
+// Import plugins
 import fastifyCookie from "@fastify/cookie"
-
 import { customCorsPlugin } from "./plugins/customCorsPlugin.js"
 import { customErrorHandlerPlugin } from "./plugins/customErrorHandlerPlugin.js"
-import { verifyAccessTokenPlugin } from "./plugins/verifyAccessTokenPlugin.js"
-import { verifyRefreshTokenPlugin } from "./plugins/verifyRefreshTokenPlugin.js"
-import { authUserPlugin } from "./plugins/authUserPlugin.js"
+import { authUserPlugin } from "./plugins/authUserPlugin.js" // Verifies AT
 
+// Import route handlers
 import { authUserCreate } from "./route-handlers/auth-user-create.js"
-import { authUserLogin } from "./route-handlers/auth-user-login.js"
-import { publishAtFromRtPlugin } from "./route-handlers/auth-publish-at-from-rt.js"
+import { authUserSignIn } from "./route-handlers/auth-user-signin.js"
+import { authPublishAtFromRt } from "./route-handlers/auth-publish-at-from-rt.js" //Verifies RT
+
 import { userProtectedTest } from "./route-handlers/user-protected-test.js"
-
-import { test001 } from "./route-handlers/test001.js"
-import { authTest } from "./route-handlers/authTest.js"
-
-import { cookieSettingTest } from "./route-handlers/cookie-setting-test.js"
+import { accountItems } from "./route-handlers/account-items.js"
+import { accountOrders } from "./route-handlers/account-orders.js"
+import { accountSecurity } from "./route-handlers/account-security.js"
+import { accountSettings } from "./route-handlers/account-settings.js"
+import { accountWishlist } from "./route-handlers/account-wishlist.js"
 
 const startServer = async () => {
   try {
     const fastify = Fastify({ logger: true })
 
-    await fastify.register(customCorsPlugin)
+    // Plugins
     await fastify.register(fastifyCookie)
+    await fastify.register(customCorsPlugin)
     await fastify.register(customErrorHandlerPlugin)
-    await fastify.register(verifyAccessTokenPlugin)
     await fastify.register(authUserPlugin)
 
-    fastify.get("/test", test001)
-
-    // Routes 1. auth
+    // Routes
+    // 01: Auth
     fastify.post("/auth-user-create", authUserCreate)
-
-    fastify.post("/auth-user-login", authUserLogin)
-    fastify.get("/auth-publish-at-from-rt", publishAtFromRtPlugin)
-
-    fastify.post("/cookie-test", cookieSettingTest)
+    fastify.post("/auth-user-signin", authUserSignIn)
+    fastify.get("/auth-publish-at-from-rt", authPublishAtFromRt)
 
     // /auth-user-login
     // /auth-user-logout
@@ -50,14 +46,15 @@ const startServer = async () => {
     // /auth-revoke-refresh-token – For revoking refresh tokens (useful for invalidating tokens in case of logout or other scenarios).
     // /auth-session-info – For fetching active session information, such as the current state of refresh tokens or login status.
 
-    // Routes 2. protected
-    fastify.get("/user-area-test-with-at", { preHandler: fastify.verifyAccessToken }, userProtectedTest)
-    fastify.get("/user-area-test-with-rt", { preHandler: fastify.verifyRefreshToken }, userProtectedTest)
-
+    // 02: Protected
     //🥦🥦🥦🥦↓↓↓↓↓↓↓↓↓MAKE THIS WORK!!!!!!!🥦🥦🥦🥦
     fastify.get("/protected-item", { preHandler: fastify.authUser }, userProtectedTest)
 
-    fastify.get("/auth-test", authTest)
+    fastify.get("/protected/account-items", { preHandler: fastify.authUser }, accountItems)
+    fastify.get("/protected/account-orders", { preHandler: fastify.authUser }, accountOrders)
+    fastify.get("/protected/account-security", { preHandler: fastify.authUser }, accountSecurity)
+    fastify.get("/protected/account-settings", { preHandler: fastify.authUser }, accountSettings)
+    fastify.get("/protected/account-wishlist", { preHandler: fastify.authUser }, accountWishlist)
 
     const mo = process.env.MO
     const port = process.env.PORT

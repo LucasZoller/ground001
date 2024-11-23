@@ -77,7 +77,7 @@
   }
 
   .rps-header {
-    padding: 10px;
+    padding: 10px 10px 0;
   }
   .rps-header-lang-box {
     display: block;

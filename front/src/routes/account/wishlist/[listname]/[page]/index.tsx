@@ -1,11 +1,12 @@
-import { component$, useStore, useTask$, useVisibleTask$ } from "@builder.io/qwik"
-import { useLocation, useNavigate } from "@builder.io/qwik-city"
+import { component$, useStore, useTask$ } from "@builder.io/qwik"
+import { routeLoader$, useLocation, useNavigate } from "@builder.io/qwik-city"
 
-import { useAuth } from "../../../../hooks/useAuth"
-import { obj } from "../postgresData"
-import { IndexWish } from "../../../../components/AccountPages/IndexWish"
-import { Breadcrumbs } from "../../../../components/UtilityComponents/Breadcrums"
-import { Pagination } from "../../../../components/UtilityComponents/Pagination"
+import { obj } from "../../postgresData"
+import { IndexWish } from "../../../../../components/AccountPages/IndexWish"
+import { Breadcrumbs } from "../../../../../components/UtilityComponents/Breadcrums"
+import { Pagination } from "../../../../../components/UtilityComponents/Pagination"
+
+import type { SuccessfulSignInPayload, ProtectedData } from "../../../../../types"
 
 type WishItem = {
   itemAddedOn: string
@@ -18,9 +19,11 @@ type WishItem = {
   }
 }
 
-export default component$(() => {
-  const { userState, sessionState } = useAuth("/user-area-test")
+export const useLoader = routeLoader$(({ params }) => {
+  console.log("🦄🦄🦄What is the value of params? :", params)
+})
 
+export default component$(() => {
   const store = useStore({
     itemsPerPage: 5,
     isLastSlice: false,
@@ -28,9 +31,9 @@ export default component$(() => {
     totalPages: 0,
     currentPage: 0,
     startIndex: 0,
-    endIndex: 0
+    endIndex: 0,
   })
-
+  useLoader()
   const location = useLocation()
   const nav = useNavigate()
 
@@ -49,8 +52,8 @@ export default component$(() => {
   return (
     <section>
       <Breadcrumbs />
-
-      {userState.user_code ? <IndexWish wishItemObjArr={store.arrForThisPage} isLastSlice={store.isLastSlice} /> : <div>Nothing to show here</div>}
+      //Conditionally show appropriate component.
+      {true ? <IndexWish wishItemObjArr={store.arrForThisPage} isLastSlice={store.isLastSlice} /> : <div>Nothing to show here</div>}
       <div class="mtb20">
         <Pagination totalPages={store.totalPages} />
       </div>

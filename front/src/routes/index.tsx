@@ -2,20 +2,16 @@ import { component$, useContext } from "@builder.io/qwik"
 import {
   Link,
   routeLoader$,
-  useContent,
   useNavigate,
   type DocumentHead,
 } from "@builder.io/qwik-city"
 import wretch from "wretch"
 import { BACK_URL } from "../config"
-import { Video, TestFastify } from "../types"
+import type { Video } from "../types"
 
 import { obj } from "./postgresData"
 
-import {
-  ContextIdGlobalState,
-  ContextIdSimpleState,
-} from "../context/ContextGlobalState"
+import { ContextIdGlobalState } from "../context/ContextGlobalState"
 
 export const useReadVid = routeLoader$(async () => {
   //This code runs only on the server, after every navigation
@@ -33,7 +29,6 @@ export default component$(() => {
   const dbVids = useReadVid()
   const navigate = useNavigate()
   const { sessionState } = useContext(ContextIdGlobalState)
-  const simpleState = useContext(ContextIdSimpleState)
   return (
     // sidebar
     <div class="w100 flex">
@@ -45,8 +40,10 @@ export default component$(() => {
           boxShadow: "0 0 8px var(--gray-700)",
         }}>
         <div>
-          {sessionState.userName ? sessionState.userName : "no name found"}
-          {sessionState.lang ? sessionState.lang : "nothing"}
+          <div>
+            {sessionState.userName ? sessionState.userName : "no name found"}
+          </div>
+          <div>{sessionState.lang ? sessionState.lang : "nothing"}</div>
         </div>
         <Link href="/test/">Go to test</Link>
         <div class="bg-gray-100">some sidebar thingy</div>

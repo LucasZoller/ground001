@@ -3,9 +3,10 @@ import { config } from "../config.js"
 
 const pool = new pg.Pool(config.db)
 
-export const userProtectedTest = async (request, reply) => {
+export const accountWishlist = async (request, reply) => {
   const { userCode, tokenType, guardHash } = request.payload //{ userCode, tokenType: "RT", guardHash: config.guardHash.rt }
-
+  const { listname } = request.headers // "Bearer undefined (typeof "string")" if absent.
+  console.log("🌞🌞🌞🌞🌞🌞what is now the listname? : ", listname)
   if (tokenType !== "AT") throw new Error("ERR_INVALID_PAYLOAD")
   if (guardHash !== config.guardHash.at) throw new Error("ERR_GUARD_BLOCK")
 
@@ -20,10 +21,7 @@ export const userProtectedTest = async (request, reply) => {
     )
 
     if (user.rows.suspended === true) {
-      await client.query(`UPDATE users SET hashed_rt = $1 WHERE email=$2`, [
-        "",
-        email,
-      ]) // Clear suspended user's rt
+      await client.query(`UPDATE users SET hashed_rt = $1 WHERE email=$2`, ["", email]) // Clear suspended user's rt
       throw new Error("ERR_FORBIDDEN")
     }
 
