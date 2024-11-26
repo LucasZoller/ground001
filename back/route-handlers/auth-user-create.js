@@ -2,25 +2,19 @@ import pg from "pg"
 import argon2, { argon2id } from "argon2"
 import { V4 } from "paseto"
 import { config } from "../config.js"
-import {
-  generateRandomStringHelper,
-  convertExpirationTimestampToCookieMaxAge,
-  generateBase64FromTimeStamp,
-} from "../helpers/stringHelpers.js"
+import { generateRandomStringHelper, convertExpirationTimestampToCookieMaxAge, generateBase64FromTimeStamp } from "../helpers/stringHelpers.js"
 
 const pool = new pg.Pool(config.db)
 
 export const authUserCreate = async (request, reply) => {
+  console.log("🎉runnign!🎉")
   let client // finally-block cannot access any variable declared inside the try-block.
   try {
     client = await pool.connect()
 
     // Check if the email already exists in the database.
     const { email } = request.body
-    const checkEmail = await client.query(
-      `SELECT 1 FROM users WHERE email=$1 LIMIT 1`,
-      [email]
-    )
+    const checkEmail = await client.query(`SELECT 1 FROM users WHERE email=$1 LIMIT 1`, [email])
     if (checkEmail.rows.length > 0) {
       throw new Error("ERR_EMAIL_EXISTS") //Break out from the try block immediately.
     }
@@ -31,10 +25,7 @@ export const authUserCreate = async (request, reply) => {
     do {
       // Anything inside do{} runs at least once.
       code16 = generateRandomStringHelper()
-      emptyIfUnique = await client.query(
-        `SELECT 1 FROM users WHERE user_code = $1 LIMIT 1`,
-        [code16]
-      )
+      emptyIfUnique = await client.query(`SELECT 1 FROM users WHERE user_code = $1 LIMIT 1`, [code16])
     } while (emptyIfUnique.rows.length > 0)
 
     // Create hashed password using Argon2id
@@ -53,13 +44,9 @@ export const authUserCreate = async (request, reply) => {
     let tempAt, tempRawRt, tempHashedRt, tempAtDecodedObj, tempRtDecodedObj
     try {
       tempAt = await V4.sign({ sub: userCode }, config.pasetoKeys.secret.at, {
-        expiresIn: config.expiration.paseto.at,
+        expiresIn: config.expiration.paseto.at
       })
-      tempRawRt = await V4.sign(
-        { sub: userCode },
-        config.pasetoKeys.secret.rt,
-        { expiresIn: config.expiration.paseto.rt }
-      )
+      tempRawRt = await V4.sign({ sub: userCode }, config.pasetoKeys.secret.rt, { expiresIn: config.expiration.paseto.rt })
       tempAtDecodedObj = await V4.verify(tempAt, config.pasetoKeys.public.at)
       tempRtDecodedObj = await V4.verify(tempRawRt, config.pasetoKeys.public.rt)
       tempHashedRt = await argon2.hash(tempRawRt, config.argon2)
@@ -80,48 +67,43 @@ export const authUserCreate = async (request, reply) => {
     const createdAt = new Date().toISOString()
     const modifiedAt = new Date().toISOString()
     const cartItems = [""]
-    const values = [
-      userCode,
-      lang,
-      userName,
-      email,
-      hashedPassword,
-      hashedRt,
-      createdAt,
-      modifiedAt,
-      suspended,
-      cartItems,
-    ]
-    await client.query(
+    const values = [userCode, lang, userName, email, hashedPassword, hashedRt, createdAt, modifiedAt, suspended, cartItems]
+    const user = await client.query(
       `INSERT INTO users(
         user_code, lang, user_name, email, aegis, hashed_rt, created_at, last_modified_at, suspended, cart
         ) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-         ON CONFLICT (user_code) DO NOTHING`,
+         ON CONFLICT (user_code) DO NOTHING
+         RETURNING id, user_name, cart, lang`,
       values
     )
-    // Successful response
-    // Set refresh token in a httpOnly cookie
-    const rtExpInBase64Code = generateBase64FromTimeStamp(rtExpTimestamp)
-    return (
-      reply
-        .setCookie("cltoken", rawRt, {
-          path: "/",
-          httpOnly: true, //Prevents access via JavaScript
-          secure: process.env.NODE_ENV === "production", // Ensures it's only sent over HTTPS
-          sameSite: "Lax", // Prevents CSRF attacks
-          maxAge: rtMaxAge, // Seconds. NOT milliseconds.
-        })
-        .setCookie("site-session", rtExpInBase64Code, {
-          path: "/",
-          httpOnly: false, // Accessible to JavaScript
-          secure: true, // Send only over HTTPS (set to false for local dev)
-          sameSite: "Strict",
-          maxAge: rtMaxAge, // Seconds. NOT milliseconds.
-        })
-        // Send response
-        .code(200)
-        .send({ at, atExp, userName, cartItems, lang })
-    )
+    if (user.rows.length === 0) {
+      throw new Error("ERR_NO_INSERTION")
+    } else {
+      const { id, user_name, cart, lang } = user.rows[0]
+      // Successful response
+      // Set refresh token in a httpOnly cookie
+      const rtExpInBase64Code = generateBase64FromTimeStamp(rtExpTimestamp)
+      return (
+        reply
+          .setCookie("cltoken", rawRt, {
+            path: "/",
+            httpOnly: true, //Prevents access via JavaScript
+            secure: process.env.NODE_ENV === "production", // Ensures it's only sent over HTTPS
+            sameSite: "Lax", // Prevents CSRF attacks
+            maxAge: rtMaxAge // Seconds. NOT milliseconds.
+          })
+          .setCookie("site-session", rtExpInBase64Code, {
+            path: "/",
+            httpOnly: false, // Accessible to JavaScript
+            secure: true, // Send only over HTTPS (set to false for local dev)
+            sameSite: "Strict",
+            maxAge: rtMaxAge // Seconds. NOT milliseconds.
+          })
+          // Send response
+          .code(200)
+          .send({ id, userName: user_name, cart, lang })
+      )
+    }
   } finally {
     if (client) {
       client.release()

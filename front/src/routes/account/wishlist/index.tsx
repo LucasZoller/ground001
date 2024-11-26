@@ -1,8 +1,9 @@
-import { component$, useSignal } from "@builder.io/qwik"
+import { component$, useStore, useTask$ } from "@builder.io/qwik"
 import { routeLoader$ } from "@builder.io/qwik-city"
 
 import { IndexWish } from "../../../components/AccountPages/IndexWish"
 import { Breadcrumbs } from "../../../components/UtilityComponents/Breadcrums"
+import { Pagination } from "../../../components/UtilityComponents/Pagination"
 
 import { fetchProtectedDataHelper } from "../../../helpers/fetch-helpers"
 import { useBanIdlePrefetch } from "../../../hooks/useBanIdlePrefetch"
@@ -23,56 +24,45 @@ type WishIndexObj = {
   isLastSlice: boolean
 }
 
-// CASE 2-1, 2-2 : Can't reach here without AT.
-export const useProtectedDataLoader = routeLoader$(async ({ cookie }) => {
+export const useProtectedWishlistLoader = routeLoader$(async ({ cookie }) => {
   return fetchProtectedDataHelper(cookie, "/protected/account-wishlist")
 })
 
 export default component$(() => {
   const allowDisplay = useBanIdlePrefetch()
-  const data = useProtectedDataLoader()
+  const data = useProtectedWishlistLoader()
 
-  console.log("wishlist index.tsx useProtectedDataLoader returned this : ", data.value)
+  const store = useStore({
+    itemsPerPage: 10,
+    isLastSlice: false,
+    arrForThisPage: [] as WishItem[],
+    totalPages: 0,
+    currentPage: 0,
+    startIndex: 0,
+    endIndex: 0
+  })
+
+  useTask$(({ track }) => {
+    store.totalPages = Math.ceil(obj.length / store.itemsPerPage)
+    store.currentPage = 1
+    store.isLastSlice = store.currentPage === store.totalPages
+
+    store.startIndex = (store.currentPage - 1) * store.itemsPerPage
+    store.endIndex = store.startIndex + store.itemsPerPage
+
+    store.arrForThisPage = obj.slice(store.startIndex, store.endIndex)
+  })
 
   return (
     <section>
       <Breadcrumbs />
-      {data.value?.verified && allowDisplay ? (
-        <div>
-          <div>User code : {data.value?.userCode}</div>
-          <div>User code : {data.value?.protected.message}</div>
-          <div class="flex">
-            <div class="grid" style={{ maxWidth: "220px" }}>
-              <div class="box-cadetblue" style={{ textAlign: "center" }}>
-                My wishlist
-              </div>
-              <div class="box-cadetblue" style={{ textAlign: "center" }}>
-                My second wishlist
-              </div>
-              <div class="box-cadetblue" style={{ textAlign: "center" }}>
-                My third wishlist
-              </div>
-              <div class="mini-button-magenta mtba">Add another wishlist +</div>
-            </div>
-            <div style={{ width: "700px" }}>
-              <h3>My wishlist</h3>
-              <div>
-                <ul>
-                  <li>Item 1 from List A</li>
-                  <li>Item 2 from List A</li>
-                  <li>Item 3 from List A</li>
-                  <li>Item 4 from List A</li>
-                  <li>Item 5 from List A</li>
-                </ul>
 
-                <div>Show pagination</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div>Nothing to show here</div>
-      )}
+      {true ? <IndexWish wishItemObjArr={store.arrForThisPage} isLastSlice={store.isLastSlice} /> : <div>Nothing to show here</div>}
+      <div class="mtb20">
+        <Pagination totalPages={store.totalPages} />
+      </div>
+
+      <div></div>
     </section>
   )
 })

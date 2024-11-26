@@ -5,8 +5,8 @@ import { obj } from "../../postgresData"
 import { IndexWish } from "../../../../../components/AccountPages/IndexWish"
 import { Breadcrumbs } from "../../../../../components/UtilityComponents/Breadcrums"
 import { Pagination } from "../../../../../components/UtilityComponents/Pagination"
-
-import type { SuccessfulSignInPayload, ProtectedData } from "../../../../../types"
+import { fetchProtectedDataHelperWithParam } from "../../../../../helpers/fetch-helpers"
+import { useBanIdlePrefetch } from "../../../../../hooks/useBanIdlePrefetch"
 
 type WishItem = {
   itemAddedOn: string
@@ -19,8 +19,8 @@ type WishItem = {
   }
 }
 
-export const useLoader = routeLoader$(({ params }) => {
-  console.log("🦄🦄🦄What is the value of params? :", params)
+export const useProtectedWishlistPageLoader = routeLoader$(({ cookie, params }) => {
+  return fetchProtectedDataHelperWithParam(cookie, "/protected/account-wishlist", params?.page)
 })
 
 export default component$(() => {
@@ -31,9 +31,11 @@ export default component$(() => {
     totalPages: 0,
     currentPage: 0,
     startIndex: 0,
-    endIndex: 0,
+    endIndex: 0
   })
-  useLoader()
+
+  const allowDisplay = useBanIdlePrefetch()
+  const data = useProtectedWishlistPageLoader()
   const location = useLocation()
   const nav = useNavigate()
 

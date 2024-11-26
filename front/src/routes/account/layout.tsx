@@ -3,7 +3,6 @@ import { Link, RequestHandler } from "@builder.io/qwik-city"
 
 import { ContextProviderUserState } from "../../context/ContextUserState"
 
-import { ContextIdGlobalState } from "~/context/ContextGlobalState"
 import wretch from "wretch"
 import { BACK_URL } from "../../config"
 import type { SuccessfulSignInPayload } from "../../types"
@@ -14,9 +13,10 @@ export const onGet: RequestHandler = async ({ cookie, redirect }) => {
   console.log(`${Math.random()}🐞🐞🐞Tell me if the layout is triggered!`)
   const rt = cookie.get("revive")?.value
 
-  if (!rt) throw redirect(302, "/portal/signin") // Guest user.
+  if (!rt) throw redirect(302, "/portal/signin") // Guest user. Not allowed at protected routes.
   const at = cookie.get("torch")?.value // undefined if absent
   if (!at) {
+    // e.g. A user navigating to protected route 1 week after the publish of AT by the root layout.
     // CASE 2-1 : Get AT from RT. Update both RT&AT in the cookie.
     try {
       const payload = await wretch(`${BACK_URL}/auth-publish-at-from-rt`)

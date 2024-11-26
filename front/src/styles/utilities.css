@@ -1008,6 +1008,10 @@
   color: #3dbdbd;
 }
 
+.color-blue {
+  color: var(--blue);
+}
+
 /* font-weight */
 .font-weight-100 {
   font-weight: 100;
@@ -1149,6 +1153,12 @@
 }
 .bg-slate-1000 {
   background-color: var(--slate-1000);
+}
+
+/* hover background color */
+
+.hover-bg-gray-800:hover {
+  background-color: var(--gray-800);
 }
 
 /* opacity */

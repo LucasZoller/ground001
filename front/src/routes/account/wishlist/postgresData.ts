@@ -9,6 +9,31 @@ export type WishItem = {
   }
 }
 
+// Each user can have up to 5 lists.
+// List has a name.
+// How can we tell the primary wishlist?
+
+// CREATE TABLE wishlist (
+//   id SERIAL PRIMARY KEY,         -- Unique identifier for each wishlist
+//   ref_user_id INT NOT NULL REFERENCES users(id),  -- Links to the users table
+//   list_data JSONB NOT NULL,      -- JSONB storing up to 20 items
+//   list_name VARCHAR(100) DEFAULT 'My Wishlist',  -- Optional: allow users to name lists
+//   serial_number INT NOT null,
+//   is_primary BOOLEAN DEFAULT FALSE,
+//   created_at TIMESTAMP DEFAULT NOW()
+// );
+
+// Create "partial unique index" constraints on "is_primary = TRUE" for each ref_user_id.
+// CREATE UNIQUE INDEX idx_primary_wishlist
+// ON wishlist (ref_user_id)
+// WHERE is_primary = TRUE;
+
+// the shape of list_data
+// [
+//   {"productId": "abcd0001", "comment": "Initial comment", "added_at": "2024-11-20T12:00:00Z"},
+//   {"productId": "abcd0002", "comment": "Another comment", "added_at": "2024-11-21T12:00:00Z"},...x20 max
+// ]
+
 export const obj = [
   {
     itemAddedOn: "January 11, 2020",

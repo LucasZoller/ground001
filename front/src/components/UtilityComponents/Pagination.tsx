@@ -8,9 +8,8 @@ type PaginationObj = {
 export const Pagination = component$(({ totalPages }: PaginationObj) => {
   const pagesArr = Array.from({ length: totalPages }, (_, i) => i + 1)
   const location = useLocation()
-  console.log("location output :", location)
-  console.log("location path : ", location.url.pathname.split("/").slice(0, 3).join("/") + "/")
-  const path = location.url.pathname.split("/").slice(0, 3).join("/") + "/"
+
+  const path = location.url.pathname.split("/").slice(0, 4).join("/") + "/"
   const currentPage = parseInt(location.params.page)
   return (
     <div class="flex justify-center gap15">

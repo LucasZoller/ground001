@@ -1,27 +1,56 @@
-import { component$ } from "@builder.io/qwik"
-import { RequestEvent, routeLoader$ } from "@builder.io/qwik-city"
+import { component$, useStore, useTask$ } from "@builder.io/qwik"
+import { routeLoader$, useLocation, useNavigate } from "@builder.io/qwik-city"
 
-import type { SuccessfulSignInPayload, ProtectedData } from "../../../../types"
-import { cookieHelper } from "../../../../helpers/cookie-helper"
-import { BACK_URL } from "../../../../config"
-import wretch from "wretch"
+import { fetchProtectedDataHelper } from "../../../../helpers/fetch-helpers"
+import { useBanIdlePrefetch } from "../../../../hooks/useBanIdlePrefetch"
+import { obj } from "../postgresData"
 
+import { Breadcrumbs } from "../../../../components/UtilityComponents/Breadcrums"
+import { IndexWish } from "../../../../components/AccountPages/IndexWish"
+import { Pagination } from "../../../../components/UtilityComponents/Pagination"
+
+import type { WishItem } from "../postgresData"
 // CASE 2-1, 2-2 : Can't reach here without AT.
-export const useProtectedDataLoader = routeLoader$(async ({ cookie, redirect, params }) => {
-  console.log("the shape of param", params)
-  const at = cookie.get("torch")?.value // If AT was set in CASE 2-1, the AT here is the newly set AT.
-  if (!at) throw redirect(302, "/portal/signin") // Can not normally happen. Immediately redirect.
-  try {
-    const data = await wretch(`${BACK_URL}/protected/account-wishlist`) // Use AT to fetch protected data.
-      .headers({ at: `Bearer ${at}`, listname: `${params.listname}` }) // Use headers for reliability, control and security.
-      .get()
-      .json<ProtectedData>() // Protected data we need for this page.
-    return data
-  } catch (err) {
-    console.log(err)
-  }
+export const useProtectedWishlistNameLoader = routeLoader$(async ({ cookie, redirect, params }) => {
+  return fetchProtectedDataHelper(cookie, "/protected/account-wishlist")
 })
 
 export default component$(() => {
-  return <>Hey hello!</>
+  const allowDisplay = useBanIdlePrefetch()
+  const data = useProtectedWishlistNameLoader()
+  const store = useStore({
+    itemsPerPage: 10,
+    isLastSlice: false,
+    arrForThisPage: [] as WishItem[],
+    totalPages: 0,
+    currentPage: 0,
+    startIndex: 0,
+    endIndex: 0
+  })
+
+  const location = useLocation()
+  const nav = useNavigate()
+
+  useTask$(({ track }) => {
+    track(() => location.params.page)
+    store.totalPages = Math.ceil(obj.length / store.itemsPerPage)
+    store.currentPage = parseInt(location.params.page)
+    store.isLastSlice = store.currentPage === store.totalPages
+
+    store.startIndex = (store.currentPage - 1) * store.itemsPerPage
+    store.endIndex = store.startIndex + store.itemsPerPage
+
+    store.arrForThisPage = obj.slice(store.startIndex, store.endIndex)
+  })
+
+  return (
+    <section>
+      <Breadcrumbs />
+      //Conditionally show appropriate component.
+      {true ? <IndexWish wishItemObjArr={store.arrForThisPage} isLastSlice={store.isLastSlice} /> : <div>Nothing to show here</div>}
+      <div class="mtb20">
+        <Pagination totalPages={store.totalPages} />
+      </div>
+    </section>
+  )
 })

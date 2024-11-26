@@ -7,12 +7,9 @@ import { generateBase64FromTimeStamp, convertExpirationTimestampToCookieMaxAge }
 const pool = new pg.Pool(config.db)
 
 export const authUserSignIn = async (request, reply) => {
-  console.log("🪱🪱🪱🪱authUserLogin is kicking in")
-  // console.log("🪱🪱🪱🪱 show me cookie", request.cookies)
   const email = request.body.email?.trim()
   const password = request.body.password?.trim()
-  console.log("🛵🛵🛵🛵Celebration if empty!!! email : ", email)
-  console.log("🛵🛵🛵🛵Celebration if empty!!! password : ", password)
+
   if (!email || !password) {
     throw new Error("ERR_FORM_NOT_FILLED")
   }
@@ -22,10 +19,7 @@ export const authUserSignIn = async (request, reply) => {
     client = await pool.connect()
 
     // Check if the email exists in the database.
-    const user = await client.query(
-      `SELECT user_code, user_name, aegis, lang, suspended, cart, hashed_rt FROM users WHERE email=$1 LIMIT 1`,
-      [email]
-    )
+    const user = await client.query(`SELECT id, user_code, user_name, aegis, lang, suspended, cart, hashed_rt FROM users WHERE email=$1 LIMIT 1`, [email])
     if (user.rows.length === 0) throw new Error("ERR_USER_NOT_FOUND")
 
     // Kick out suspended user immediately
@@ -53,10 +47,10 @@ export const authUserSignIn = async (request, reply) => {
     let tempAt, tempRawRt, tempHashedRt, tempAtDecodedObj, tempRtDecodedObj
     try {
       tempAt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.at, {
-        expiresIn: config.expiration.paseto.at,
+        expiresIn: config.expiration.paseto.at
       })
       tempRawRt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.rt, {
-        expiresIn: config.expiration.paseto.rt,
+        expiresIn: config.expiration.paseto.rt
       })
       tempAtDecodedObj = await V4.verify(tempAt, config.pasetoKeys.public.at)
       tempRtDecodedObj = await V4.verify(tempRawRt, config.pasetoKeys.public.rt)
@@ -92,36 +86,37 @@ export const authUserSignIn = async (request, reply) => {
           httpOnly: true, //Prevents access via JavaScript
           secure: process.env.NODE_ENV === "production", // Ensures it's only sent over HTTPS
           sameSite: "Lax", // Prevents CSRF attacks
-          maxAge: atMaxAge, // Seconds. NOT milliseconds.
+          maxAge: atMaxAge // Seconds. NOT milliseconds.
         })
         .setCookie("flameout", atExpInBase64Url, {
           path: "/",
           httpOnly: true, // Accessible to JavaScript
           secure: true, // Send only over HTTPS (set to false for local dev)
           sameSite: "Strict",
-          maxAge: atMaxAge, // Seconds. NOT milliseconds.
+          maxAge: atMaxAge // Seconds. NOT milliseconds.
         })
         .setCookie("revive", rawRt, {
           path: "/", // Makes the cookie accessible from all paths in the backend
           httpOnly: true, //Prevents access via JavaScript
           secure: process.env.NODE_ENV === "production", // Ensures it's only sent over HTTPS
           sameSite: "Lax", // Prevents CSRF attacks
-          maxAge: rtMaxAge, // Seconds. NOT milliseconds.
+          maxAge: rtMaxAge // Seconds. NOT milliseconds.
         })
         .setCookie("end", rtExpInBase64Url, {
           path: "/",
           httpOnly: true, // Accessible to JavaScript
           secure: true, // Send only over HTTPS (set to false for local dev)
           sameSite: "Strict",
-          maxAge: rtMaxAge, // Seconds. NOT milliseconds.
+          maxAge: rtMaxAge // Seconds. NOT milliseconds.
         })
 
         // 7. Send response
         .code(200)
         .send({
+          id: user.rows[0].id,
           userName: user.rows[0].user_name,
           cartItems: user.rows[0].cart,
-          lang: user.rows[0].lang,
+          lang: user.rows[0].lang
         })
     )
   } finally {

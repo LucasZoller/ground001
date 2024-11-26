@@ -1,10 +1,5 @@
 import { component$, useContext } from "@builder.io/qwik"
-import {
-  Link,
-  routeLoader$,
-  useNavigate,
-  type DocumentHead,
-} from "@builder.io/qwik-city"
+import { Link, routeLoader$, useNavigate, type DocumentHead } from "@builder.io/qwik-city"
 import wretch from "wretch"
 import { BACK_URL } from "../config"
 import type { Video } from "../types"
@@ -12,6 +7,7 @@ import type { Video } from "../types"
 import { obj } from "./postgresData"
 
 import { ContextIdGlobalState } from "../context/ContextGlobalState"
+import { MiniModalWishlistAddItem } from "~/components/ModalsMini/MiniModalWishlistAddItem"
 
 export const useReadVid = routeLoader$(async () => {
   //This code runs only on the server, after every navigation
@@ -37,12 +33,11 @@ export default component$(() => {
         style={{
           width: "240px",
           backgroundColor: "var(--gray-500)",
-          boxShadow: "0 0 8px var(--gray-700)",
-        }}>
+          boxShadow: "0 0 8px var(--gray-700)"
+        }}
+      >
         <div>
-          <div>
-            {sessionState.userName ? sessionState.userName : "no name found"}
-          </div>
+          <div>{sessionState.userName ? sessionState.userName : "no name found"}</div>
           <div>{sessionState.lang ? sessionState.lang : "nothing"}</div>
         </div>
         <Link href="/test/">Go to test</Link>
@@ -61,26 +56,22 @@ export default component$(() => {
         style={{
           gridTemplateColumns: "1fr 1fr 1fr",
           maxWidth: "1080px",
-          justifyContent: "",
-        }}>
-        {obj.map((singleVideoObj) => (
+          justifyContent: ""
+        }}
+      >
+        {obj.map(singleVideoObj => (
           <div
             class="w100 bg-gray-900 radius15 grid"
             style={{
               minWidth: "280px",
               overflow: "hidden",
-              gridTemplateRows: "auto 1fr",
+              gridTemplateRows: "auto 1fr"
             }}
-            key={singleVideoObj.productId}>
+            key={singleVideoObj.productId}
+          >
             <picture class="inline-block mtba" style={{ alignSelf: "start" }}>
-              <source
-                srcset={singleVideoObj.thumbSetObject.avif[0]}
-                type="image/avif"
-              />
-              <source
-                srcset={singleVideoObj.thumbSetObject.jpeg[0]}
-                type="image/jpeg"
-              />
+              <source srcset={singleVideoObj.thumbSetObject.avif[0]} type="image/avif" />
+              <source srcset={singleVideoObj.thumbSetObject.jpeg[0]} type="image/jpeg" />
 
               <img
                 width="320"
@@ -94,18 +85,16 @@ export default component$(() => {
               class="p5 grid gap2"
               style={{
                 gridTemplateRows: "auto auto auto",
-                alignSelf: "stretch",
-              }}>
+                alignSelf: "stretch"
+              }}
+            >
               <div class="font-8" style={{ alignSelf: "start" }}>
-                {singleVideoObj.productId}
+                {singleVideoObj.productCode}
               </div>
-              <div class="font-9 color-magenta">
-                {singleVideoObj.productTitle}
-              </div>
-              <div
-                class="flex prl5 pb4"
-                style={{ alignSelf: "end", justifyContent: "space-between" }}>
+              <div class="font-9 color-magenta">{singleVideoObj.productTitle}</div>
+              <div class="flex prl5 pb4" style={{ alignSelf: "end", justifyContent: "space-between" }}>
                 <div class="mtba">${singleVideoObj.productPrice}</div>
+                <MiniModalWishlistAddItem props={{ productId: singleVideoObj.productId, productCode: singleVideoObj.productCode }} />
                 <div class="mini-button-orange ptb5 prl10">Add to Cart</div>
               </div>
             </div>
@@ -121,7 +110,7 @@ export const head: DocumentHead = {
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
-    },
-  ],
+      content: "Qwik site description"
+    }
+  ]
 }

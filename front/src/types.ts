@@ -23,13 +23,20 @@ export type ModalState = {
   showModal: boolean
   modalCode: ModalCode
 }
-export type ModalCode = "MODAL_USER_SIGNIN" | "MODAL_USER_REGISTRATION" | "MODAL_FORGOT_PASSWORD" | "MODAL_EMAIL_ALREADY_EXISTS" | "MODAL_ACCOUNT_CREATION_SUCCESSFUL" | "MODAL_CLOSE"
+export type ModalCode =
+  | "MODAL_USER_SIGNIN"
+  | "MODAL_USER_REGISTRATION"
+  | "MODAL_FORGOT_PASSWORD"
+  | "MODAL_EMAIL_ALREADY_EXISTS"
+  | "MODAL_ACCOUNT_CREATION_SUCCESSFUL"
+  | "MODAL_CREATE_WISHLIST"
+  | "MODAL_CLOSE"
 
 export type SessionState = {
-  userName?: string //Greeting message on the login icon.
-  cart?: string[] //store cart items in string
-  lang?: string //EN or JP
-
+  id?: string // Primary key in the user table.
+  userName?: string // Not user code.
+  cart?: string[] // store cart items in string.
+  lang?: string // EN or JP.
   needVisibleTask?: boolean // True to move on to the useVisibleTask from useTask.
   navigateToSignIn?: boolean //Navigate to singin if true.
   authTicket?: boolean // True if AT was verified. User can enter protected routes.
@@ -48,6 +55,7 @@ export type GlobalState = {
 
 //Backend returns this payload upon successful login
 export type SuccessfulSignInPayload = {
+  id: string
   userName: string
   cart: string[]
   lang: string

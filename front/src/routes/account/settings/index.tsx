@@ -5,7 +5,7 @@ import { useBanIdlePrefetch } from "~/hooks/useBanIdlePrefetch"
 import { routeLoader$ } from "@builder.io/qwik-city"
 import { fetchProtectedDataHelper } from "~/helpers/fetch-helpers"
 
-export const useProtectedDataLoader = routeLoader$(async ({ cookie }) => {
+export const useProtectedSettingsLoader = routeLoader$(async ({ cookie }) => {
   return fetchProtectedDataHelper(cookie, "/protected/account-settings")
 })
 
@@ -13,7 +13,7 @@ export default component$(() => {
   const { sessionState } = useContext(ContextIdGlobalState)
 
   const allowDisplay = useBanIdlePrefetch()
-  const data = useProtectedDataLoader()
+  const data = useProtectedSettingsLoader()
   return (
     <>
       <Breadcrumbs />

@@ -1,0 +1,40 @@
+Rename the table from `videos` if we plan to have something else in the future.
+
+We may have something elese in the future, 
+
+JSOB of wishlist should then store the id, and the masked table name.
+
+// tableMap.js
+const tableMap = {
+    1: "products",
+    2: "digital_products",
+    3: "physical_products",
+};
+
+module.exports = tableMap;
+
+
+sample_url and video_url should be JSONB. 
+add product_category that is number
+
+// Shape of JSONB
+{
+  "table_id": 1,
+  "id": 123,
+  "comment": "Great product!",
+  "added_at": "2024-11-20T12:00:00Z"
+}
+
+// How we translate masked id to the actual table name
+const tableMap = require('./tableMap');
+
+function getTableName(tableId) {
+    const tableName = tableMap[tableId];
+    if (!tableName) {
+        throw new Error(`Invalid table_id: ${tableId}`);
+    }
+    return tableName;
+}
+
+const tableId = wishlistItem.table_id; // Extract from JSONB
+const tableName = getTableName(tableId); // Translate to actual table name

@@ -29,11 +29,12 @@ export async function createVid001(req, res) {
       sample_url_480p,
       sample_url_720p
     } = req.body.vidProp
-
+    console.log("Shape of req.body", req.body.vidProp)
     const createdAt = new Date().toISOString()
     const modifiedAt = new Date().toISOString()
     const duration = `${duration_min} minutes ${duration_sec} seconds`
-    const imgUrlNoEmptyStrings = img_url.filter(element => element !== "")
+    console.log("Shape of img_url", img_url)
+    const imgUrlNoEmptyStrings = { avif: img_url.avif.filter(element => element !== ""), jpeg: img_url.jpeg.filter(element => element !== "") }
 
     const values = [
       product_number,
@@ -57,6 +58,7 @@ export async function createVid001(req, res) {
     ]
 
     const client = await pool.connect()
+    console.log("How many pool are left?", client)
     try {
       await client.query(
         `INSERT INTO videos(
@@ -84,6 +86,7 @@ export async function createVid001(req, res) {
     } catch (errDB) {
       console.log("errDB🧨", errDB)
     } finally {
+      console.log("reached in the finally block!", product_number)
       client.release()
     }
   } catch (errConnection) {

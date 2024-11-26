@@ -61,7 +61,78 @@ The advantage of useVisibleTask
 
 
 
+//Partial Unique Index and Unique Index
+
+This is an example of creating a table with unique index. (NOT "partial" unique index.)
+
+CREATE TABLE wishlist (
+    id SERIAL PRIMARY KEY,
+    ref_user_id INT NOT NULL,
+    is_primary BOOLEAN DEFAULT FALSE,
+    CONSTRAINT uniq_primary_wishlist UNIQUE (ref_user_id, is_primary)
+);
+
+The above example not only doesn`t allow multiple "is_primary = TRUE", 
+but it also doesn't allow multiple "is_primary = FALSE".
+
+Effectively, it only allows one "is_primary = TRUE", and one "is_primary = FALSE".
+
+This breaks the design, because we want to allow each user to have up to 5 wishlists,
+where one out of which is the primary wishlist ("is_primary = TRUE") and the others be non-primary ("is_primary = FALSE").
+So we need to allow up to 4 "is_primary = FALSE" coulmns, but only 1 "is_primary = TRUE".
+The "partial index" exactly does this.
+
+In order to implement "partial unique index", we have to 
+1: Omit " CONSTRAINT uniq_serial_number UNIQUE (ref_user_id, serial_number)" from the above code,
+2: Add the following code after the table creation:
+
+CREATE UNIQUE INDEX idx_primary_wishlist
+ON wishlist (ref_user_id)
+WHERE is_primary = TRUE;
+
+When you want to create a partial unique index, you cannot directly define it as part of the table creation process.
 
 
+Final Implementation
+-- Step 1: Create the table with full unique constraints
+CREATE TABLE wishlists (
+    id SERIAL PRIMARY KEY,
+    ref_user_id INT NOT NULL REFERENCES users(id),
+    serial_number INT NOT NULL ST DEFAULT 1,
+    is_primary BOOLEAN DEFAULT FALSE,
+    list_data JSONB NOT NULL DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP DEFAULT NOW(),
+    list_name VARCHAR(80) DEFAULT 'My Wishlist',
+    CONSTRAINT uniq_user_serial_number UNIQUE (ref_user_id, serial_number) -- Ensure unique ordering per user
+);
+
+-- Step 2: Add the partial unique index for primary wishlist logic
+CREATE UNIQUE INDEX idx_primary_wishlist
+ON wishlists (ref_user_id)
+WHERE is_primary = TRUE;
 
 
+Example shape of list_data JSONB:
+[
+  {"productId": "abcd0001", "comment": "Initial comment", "added_at": "2024-11-20T12:00:00Z"},
+  {"productId": "abcd0002", "comment": "Another comment", "added_at": "2024-11-21T12:00:00Z"},...x20 max
+]
+
+Implement:
+Frontend keyword search (requires prefetching all items from all wishlist => 100 items max.) 
+
+A CHECK constraint ensures that the JSON array in list_data never exceeds 20 items.
+ALTER TABLE wishlists
+ADD CONSTRAINT chk_list_data_length CHECK (jsonb_array_length(list_data) <= 20);
+
+
+WishilistItems tables??? 
+one - many : A single wishlist_item belongs to a single wishlist. A single wishlist is home to many wishlist_items
+
+id
+product_cat
+product_id
+comment
+added_at
+ref_wishlist_id
+ref_product_id << How do I refference one single table if it's relying on the product_cat???

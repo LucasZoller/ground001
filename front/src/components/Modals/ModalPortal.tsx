@@ -5,6 +5,7 @@ import { ModalUserRegistration } from "./ModalParts/ModalUserRegistration"
 import { EmailAlreadyExistsModal } from "./ModalParts/ModalEmailAlreadyExists"
 import { ForgotPasswordModal } from "./ModalParts/ModalForgotPassword"
 import { AccountCreationSuccessModal } from "./ModalParts/ModalAccountCreationSuccess"
+import { ModalCreateWishlist } from "./ModalParts/ModalCreateWishlist"
 import { modalCodes } from "../../config"
 
 const modalComponentMap = {
@@ -13,15 +14,14 @@ const modalComponentMap = {
   MODAL_FORGOT_PASSWORD: <ForgotPasswordModal />,
   MODAL_EMAIL_ALREADY_EXISTS: <EmailAlreadyExistsModal />,
   MODAL_ACCOUNT_CREATION_SUCCESSFUL: <AccountCreationSuccessModal />,
-  MODAL_CLOSE: null,
+  MODAL_CREATE_WISHLIST: <ModalCreateWishlist />,
+  MODAL_CLOSE: null
 }
 
 export default component$(() => {
   const { modalState } = useContext(ContextIdGlobalState)
 
-  const showModal = useComputed$(
-    () => !!modalComponentMap[modalState.modalCode]
-  )
+  const showModal = useComputed$(() => !!modalComponentMap[modalState.modalCode])
 
   const handleOutsideModalClick = $((event: MouseEvent) => {
     if ((event.target as HTMLElement).classList.contains("overlay")) {

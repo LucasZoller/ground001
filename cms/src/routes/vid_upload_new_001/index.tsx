@@ -2,15 +2,14 @@ import { $, component$, useSignal, useStore } from "@builder.io/qwik"
 import wretch from "wretch"
 import { BACKEND_URL } from "../../config"
 
-const testFetch = async () => {
-  try {
-    const data = await wretch(`${BACKEND_URL}/read_vid_001`).get().json<string>()
-    return data
-    console.log(data)
-  } catch (err) {
-    console.log(err)
-  }
+type ImageFormat = "avif" | "jpeg"
+
+export type CoverUrlObj = {
+  mobile: Record<ImageFormat, string> // Record<K, V> creates an object type with keys of type K, and values of type V.
+  desktop: Record<ImageFormat, string> // Record<ImageFormat, string> means, Both "avif" and "jpeg" must be provided as keys.
 }
+
+type ImgUrlObj = Record<ImageFormat, string[]>
 
 export default component$(() => {
   const vidProp = useStore({
@@ -18,8 +17,8 @@ export default component$(() => {
     published: false,
     title_ja: "",
     title_en: "",
-    cover_url: "",
-    img_url: [""],
+    cover_url: { mobile: { avif: "", jpeg: "" }, desktop: { avif: "", jpeg: "" } },
+    img_url: { avif: [""], jpeg: [""] },
     txt_ja: "",
     txt_en: "",
     duration_min: "",
@@ -33,8 +32,8 @@ export default component$(() => {
     sample_url_720p: ""
   })
 
-  const addInput = $(() => {
-    vidProp.img_url.push("")
+  const addInput = $((format: "avif" | "jpeg") => {
+    vidProp.img_url[format].push("")
   })
 
   const dbSubmit = $(async () => {
@@ -61,13 +60,6 @@ export default component$(() => {
         </div>
 
         <div class="section">
-          <div>title ja</div>
-          <input
-            class="inline-block p5 font8 w100"
-            type="text"
-            placeholder="日本語タイトル"
-            onInput$={e => (vidProp.title_ja = (e.target as HTMLInputElement).value)}
-          />
           <div>title en</div>
           <input
             class="inline-block p5 font8 w100"
@@ -75,47 +67,107 @@ export default component$(() => {
             placeholder="Title in English"
             onInput$={e => (vidProp.title_en = (e.target as HTMLInputElement).value)}
           />
-        </div>
-        <div class="section">
-          <div>cover url</div>
+          <div>title ja</div>
           <input
             class="inline-block p5 font8 w100"
             type="text"
-            placeholder="https://aknm.video/cover.jpg"
-            onInput$={e => (vidProp.cover_url = (e.target as HTMLInputElement).value)}
+            placeholder="日本語タイトル"
+            onInput$={e => (vidProp.title_ja = (e.target as HTMLInputElement).value)}
           />
         </div>
         <div class="section">
-          <div>img url</div>
-          {vidProp.img_url.map((url, index) => (
+          <div>cover url </div>
+          <label>
+            desktop : AVIF
+            <input
+              class="inline-block p5 font8 w100"
+              type="text"
+              placeholder="https://aknm.video/cover.jpg"
+              onInput$={e => (vidProp.cover_url.desktop.avif = (e.target as HTMLInputElement).value)}
+            />
+          </label>
+          <label>
+            desktop : JPEG
+            <input
+              class="inline-block p5 font8 w100"
+              type="text"
+              placeholder="https://aknm.video/cover.jpg"
+              onInput$={e => (vidProp.cover_url.desktop.jpeg = (e.target as HTMLInputElement).value)}
+            />
+          </label>
+          <label>
+            mobile : AVIF
+            <input
+              class="inline-block p5 font8 w100"
+              type="text"
+              placeholder="https://aknm.video/cover.jpg"
+              onInput$={e => (vidProp.cover_url.mobile.avif = (e.target as HTMLInputElement).value)}
+            />
+          </label>
+          <label>
+            mobile : JPEG
+            <input
+              class="inline-block p5 font8 w100"
+              type="text"
+              placeholder="https://aknm.video/cover.jpg"
+              onInput$={e => (vidProp.cover_url.mobile.avif = (e.target as HTMLInputElement).value)}
+            />
+          </label>
+        </div>
+        <div class="section">
+          <div>img url AVIF</div>
+          {vidProp.img_url.avif.map((url, index) => (
             <div key={index}>
-              <input
-                class="inline-block p5 font8 w100"
-                type="text"
-                placeholder="https://aknm.video/cover.jpg"
-                onInput$={e => (vidProp.img_url[index] = (e.target as HTMLInputElement).value)}
-              />
+              <label class="flex gap5">
+                <span class="mtba">{index + 1}</span>
+                <input
+                  class="inline-block p5 font8 w100 mtb5"
+                  type="text"
+                  placeholder="https://aknm.video/cover.avif"
+                  onInput$={e => (vidProp.img_url.avif[index] = (e.target as HTMLInputElement).value)}
+                />
+              </label>
             </div>
           ))}
 
-          <button type="button" onClick$={addInput}>
+          <button type="button" onClick$={() => addInput("avif")}>
             +
           </button>
         </div>
         <div class="section">
-          <div>txt ja</div>
-          <input
-            class="inline-block p5 font8 w100"
-            type="text"
-            placeholder="説明文　日本語"
-            onInput$={e => (vidProp.txt_ja = (e.target as HTMLInputElement).value)}
-          />
+          <div>img url JPEG</div>
+          {vidProp.img_url.jpeg.map((url, index) => (
+            <div key={index}>
+              <label class="flex gap5">
+                <span class="mtba">{index + 1}</span>
+                <input
+                  class="inline-block p5 font8 w100 mtb5"
+                  type="text"
+                  placeholder="https://aknm.video/cover.jpg"
+                  onInput$={e => (vidProp.img_url.jpeg[index] = (e.target as HTMLInputElement).value)}
+                />
+              </label>
+            </div>
+          ))}
+
+          <button type="button" onClick$={() => addInput("jpeg")}>
+            +
+          </button>
+        </div>
+        <div class="section">
           <div>txt en</div>
           <input
             class="inline-block p5 font8 w100"
             type="text"
             placeholder="Description in English"
             onInput$={e => (vidProp.txt_en = (e.target as HTMLInputElement).value)}
+          />
+          <div>txt ja</div>
+          <input
+            class="inline-block p5 font8 w100"
+            type="text"
+            placeholder="説明文　日本語"
+            onInput$={e => (vidProp.txt_ja = (e.target as HTMLInputElement).value)}
           />
         </div>
         <div class="section">

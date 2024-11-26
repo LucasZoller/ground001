@@ -3,6 +3,7 @@ import "dotenv/config"
 
 // Import plugins
 import fastifyCookie from "@fastify/cookie"
+import formbody from "@fastify/formbody"
 import { customCorsPlugin } from "./plugins/customCorsPlugin.js"
 import { customErrorHandlerPlugin } from "./plugins/customErrorHandlerPlugin.js"
 import { authUserPlugin } from "./plugins/authUserPlugin.js" // Verifies AT
@@ -19,6 +20,12 @@ import { accountSecurity } from "./route-handlers/account-security.js"
 import { accountSettings } from "./route-handlers/account-settings.js"
 import { accountWishlist } from "./route-handlers/account-wishlist.js"
 
+import { wishlistCreate } from "./route-handlers/wishlist-create.js"
+import { wishlistRead } from "./route-handlers/wishlist-read.js"
+import { wishlistUpdate } from "./route-handlers/wishlist-update.js"
+import { wishlistDelete } from "./route-handlers/wishlist-delete.js"
+import { wishlistAlter } from "./route-handlers/wishlist-alter.js"
+
 const startServer = async () => {
   try {
     const fastify = Fastify({ logger: true })
@@ -28,12 +35,19 @@ const startServer = async () => {
     await fastify.register(customCorsPlugin)
     await fastify.register(customErrorHandlerPlugin)
     await fastify.register(authUserPlugin)
+    await fastify.register(formbody)
 
     // Routes
     // 01: Auth
     fastify.post("/auth-user-create", authUserCreate)
     fastify.post("/auth-user-signin", authUserSignIn)
     fastify.get("/auth-publish-at-from-rt", authPublishAtFromRt)
+
+    fastify.post("/wishlist-create", wishlistCreate)
+    fastify.post("/wishlist-read", wishlistRead)
+    fastify.post("/wishlist-update", wishlistUpdate)
+    fastify.post("/wishlist-delete", wishlistDelete)
+    fastify.post("/wishlist-alter", wishlistAlter)
 
     // /auth-user-login
     // /auth-user-logout

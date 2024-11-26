@@ -31,7 +31,7 @@ export const authPublishAtFromRt = async (request, reply) => {
 
     const user = await client.query(
       `
-          SELECT user_code, user_name, lang, suspended, cart, hashed_rt FROM users WHERE user_code=$1 LIMIT 1
+          SELECT id, user_code, user_name, lang, suspended, cart, hashed_rt FROM users WHERE user_code=$1 LIMIT 1
           `,
       [userCode]
     )
@@ -53,10 +53,10 @@ export const authPublishAtFromRt = async (request, reply) => {
     let tempAt, tempRawRt, tempHashedRt
     try {
       tempAt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.at, {
-        expiresIn: config.expiration.paseto.at,
+        expiresIn: config.expiration.paseto.at
       })
       tempRawRt = await V4.sign({ sub: user.rows[0].user_code }, config.pasetoKeys.secret.rt, {
-        expiresIn: config.expiration.paseto.rt,
+        expiresIn: config.expiration.paseto.rt
       })
 
       // 6. Hash the new RT
@@ -77,6 +77,7 @@ export const authPublishAtFromRt = async (request, reply) => {
 
     // 8. Send the results
     return reply.code(200).send({
+      id: user.rows[0].id,
       userName: user.rows[0].user_name,
       cart: user.rows[0].cart,
       lang: user.rows[0].lang,
@@ -85,7 +86,7 @@ export const authPublishAtFromRt = async (request, reply) => {
       rtExpInSec: rtMaxAge,
       at,
       atExpInBase64Url,
-      atExpInSec: atMaxAge,
+      atExpInSec: atMaxAge
     })
   } finally {
     if (client) {

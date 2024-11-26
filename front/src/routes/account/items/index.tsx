@@ -10,14 +10,14 @@ import { useBanIdlePrefetch } from "../../../hooks/useBanIdlePrefetch"
 // use routeLoader$
 import { obj } from "./posgresData"
 
-export const useProtectedDataLoader = routeLoader$(async ({ cookie }) => {
+export const useProtectedItemsLoader = routeLoader$(async ({ cookie }) => {
   return fetchProtectedDataHelper(cookie, "/protected/account-items")
 })
 
 export default component$(() => {
   const { sessionState } = useContext(ContextIdGlobalState)
   const allowDisplay = useBanIdlePrefetch()
-  const data = useProtectedDataLoader()
+  const data = useProtectedItemsLoader()
 
   return (
     <section>
@@ -40,7 +40,7 @@ export default component$(() => {
       </div>
 
       <Breadcrumbs />
-      {data.value?.verified && allowDisplay ? <IndexItems cardObjArray={obj} /> : <div>Not verified. Nothing to show</div>}
+      {data.value?.verified && allowDisplay ? <IndexItems cardObjArray={obj} /> : <div>Nothing to show</div>}
     </section>
   )
 })

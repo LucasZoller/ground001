@@ -17,7 +17,7 @@ export const setCookieHelper = server$(function async(rt: string, rtMaxAge: stri
     httpOnly: true,
     secure: true,
     sameSite: "Lax",
-    maxAge: parseInt(atMaxAge),
+    maxAge: parseInt(atMaxAge)
   })
   //this.cookie.set("flameout", atExp, { path: "/", httpOnly: false, secure: true, sameSite: "Lax", maxAge: parseInt(atMaxAge) })
   this.cookie.set("revive", rt, {
@@ -25,7 +25,7 @@ export const setCookieHelper = server$(function async(rt: string, rtMaxAge: stri
     httpOnly: true,
     secure: true,
     sameSite: "Lax",
-    maxAge: parseInt(rtMaxAge),
+    maxAge: parseInt(rtMaxAge)
   })
   //this.cookie.set("end", rtExp, { path: "/", httpOnly: false, secure: true, sameSite: "Lax", maxAge: parseInt(rtMaxAge) })
 })
@@ -49,7 +49,7 @@ export const cookieOptionHelper = (maxAge: string): CookieOptions => {
     maxAge: parseInt(maxAge),
     sameSite: "Lax",
     httpOnly: true,
-    secure: true,
+    secure: true
   }
 }
 
@@ -59,33 +59,33 @@ export const cookieHelper = (cookieMethod: any, rt: string, rtExp64: string, rtM
     maxAge: parseInt(rtMaxAge),
     sameSite: "Lax",
     httpOnly: true,
-    secure: true,
+    secure: true
   })
   cookieMethod.set("torch", at, {
     path: "/",
     maxAge: parseInt(atMaxAge),
     sameSite: "Lax",
     httpOnly: true,
-    secure: true,
+    secure: true
   })
   cookieMethod.set("end", rtExp64, {
     path: "/",
     maxAge: parseInt(rtMaxAge),
     sameSite: "Lax",
     httpOnly: true,
-    secure: true,
+    secure: true
   })
   cookieMethod.set("flameout", atExp64, {
     path: "/",
     maxAge: parseInt(atMaxAge),
     sameSite: "Lax",
     httpOnly: true,
-    secure: true,
+    secure: true
   })
 }
 
 export const tokenLifeChecker = server$(function () {
-  const at = this.cookie.get("torch")?.value
+  const at = this.cookie.get("torch")?.value // undefined is absent
   const rt = this.cookie.get("revive")?.value
   const isAtAlive = !!at // false if at is undefined
   const isRtAlive = !!rt // false if rt is undefined

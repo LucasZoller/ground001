@@ -31,11 +31,7 @@ import { BACK_URL } from "../config"
 // This logic should only run once at the time of the intial render.
 // But onRequest generally fires on every http request.
 // "Prefetch" is a http request. So, avoid "prefetch" from firing onRequest.
-export const onRequest: RequestHandler = async ({
-  cookie,
-  sharedMap,
-  request,
-}) => {
+export const onRequest: RequestHandler = async ({ cookie, sharedMap, request }) => {
   const isPrefetch = request.headers.get("Sec-Fetch-Mode") === "cors"
   if (isPrefetch) return // Immediately break out in case of "prefetch".
 
@@ -55,15 +51,17 @@ export const onRequest: RequestHandler = async ({
       maxAge: parseInt(payload.rtExpInSec),
       sameSite: "Lax",
       httpOnly: true,
-      secure: true,
+      secure: true
     })
     cookie.set("torch", payload.at, {
       path: "/",
       maxAge: parseInt(payload.atExpInSec),
       sameSite: "Lax",
       httpOnly: true,
-      secure: true,
+      secure: true
     })
+
+    sharedMap.set("id", payload.id)
     sharedMap.set("userName", payload.userName)
     sharedMap.set("cart", payload.cart)
     sharedMap.set("lang", payload.lang)
@@ -72,18 +70,17 @@ export const onRequest: RequestHandler = async ({
   }
 }
 
-export const useSharedMapLoader = routeLoader$(
-  async ({ sharedMap, request }) => {
-    const isPrefetch = request.headers.get("Sec-Fetch-Mode") === "cors"
-    if (isPrefetch) return // Immediately break out in case of "prefetch".
+export const useSharedMapLoader = routeLoader$(async ({ sharedMap, request }) => {
+  const isPrefetch = request.headers.get("Sec-Fetch-Mode") === "cors"
+  if (isPrefetch) return // Immediately break out in case of "prefetch".
 
-    const userCode = sharedMap.get("userName")
-    const cart = sharedMap.get("cart")
-    const lang = sharedMap.get("lang")
+  const id = sharedMap.get("id")
+  const userName = sharedMap.get("userName")
+  const cart = sharedMap.get("cart")
+  const lang = sharedMap.get("lang")
 
-    return { userCode, cart, lang }
-  }
-)
+  return { id, userName, cart, lang }
+})
 
 export default component$(() => {
   const data = useSharedMapLoader()
